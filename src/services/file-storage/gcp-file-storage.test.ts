@@ -8,7 +8,7 @@ import { Stream } from 'stream';
 describe('GcpFileStorage', () => {
   const Bucket = 'my-bucket';
   const Filename = 'my-file.png';
-  const FilePath = `c:\\temp\\${Filename}`;
+  const FilePath = `/temp/${Filename}`;
 
   describe('#put', () => {
     let mockedBucket: jest.Mock;

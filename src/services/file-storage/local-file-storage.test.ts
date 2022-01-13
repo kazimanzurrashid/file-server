@@ -6,9 +6,9 @@ import { Stream } from 'stream';
 import LocalFileStorage from './local-file-storage';
 
 describe('LocalFileStorage', () => {
-  const RootLocation = 'c:\\projects\\file-server';
+  const RootLocation = '/projects/file-server';
   const Filename = 'my-file.png';
-  const FilePath = `c:\\temp\\${Filename}`;
+  const FilePath = `/temp/${Filename}`;
 
   describe('#put', () => {
     let mockedFileCopy: jest.Mock;

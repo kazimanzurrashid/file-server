@@ -7,7 +7,7 @@ import LocalFileStorage from './local-file-storage';
 
 describe('LocalFileStorage', () => {
   const RootLocation = 'c:\\projects\\file-server';
-  const Filename = 'my-file.png'
+  const Filename = 'my-file.png';
   const FilePath = `c:\\temp\\${Filename}`;
 
   describe('#put', () => {

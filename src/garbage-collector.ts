@@ -7,6 +7,7 @@ import IFileStorage from './services/file-storage/file-storage';
 
 @injectable()
 export default class GarbageCollector {
+  // eslint-disable-next-line no-undef
   private timerHandle: NodeJS.Timeout | undefined;
 
   constructor(
@@ -27,13 +28,12 @@ export default class GarbageCollector {
     this.timerHandle = setTimeout(async () => {
       await this.cleanup();
       this.enqueue();
-    },  config.garbageCollection.interval);
+    }, config.garbageCollection.interval);
   }
 
   private async cleanup(): Promise<void> {
     const timestamp = new Date(
-      Clock.now().getTime() -
-        config.garbageCollection.inactiveDuration
+      Clock.now().getTime() - config.garbageCollection.inactiveDuration
     );
 
     const matched = await this.repository.listInactiveSince(timestamp);

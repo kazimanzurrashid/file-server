@@ -15,10 +15,10 @@ import InMemoryRateLimit from './services/rate-limit/in-memory-rate-limit';
 import InMemoryFileRepository from './services/file-repositoy/in-memory-file-repository';
 import LocalFileStorage from './services/file-storage/local-file-storage';
 import GcpFileStorage from './services/file-storage/gcp-file-storage';
+import AwsFileStorage from './services/file-storage/aws-file-storage';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
-import AwsFileStorage from './services/file-storage/aws-file-storage';
 
 export default function createApp(): Application {
   (() => {

@@ -1,0 +1,145 @@
+{
+	"info": {
+		"_postman_id": "48fcc8a3-7722-4f82-9feb-ce5400718cb3",
+		"name": "file-server-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "upload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var res = JSON.parse(responseBody);\r",
+							"\r",
+							"pm.collectionVariables.set('PUBLIC_KEY', res.publicKey);\r",
+							"pm.collectionVariables.set('PRIVATE_KEY', res.privateKey);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/downloads/me.jpeg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/files",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/files/{{PUBLIC_KEY}}",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"files",
+						"{{PUBLIC_KEY}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/files/{{PRIVATE_KEY}}",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"files",
+						"{{PRIVATE_KEY}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ENDPOINT",
+			"value": "http://localhost:3000",
+			"type": "string"
+		},
+		{
+			"key": "PUBLIC_KEY",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "PRIVATE_KEY",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

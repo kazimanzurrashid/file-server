@@ -190,10 +190,6 @@ describe('app', () => {
       let statusCode: number;
       let result: { error: string };
 
-      afterAll((done) => {
-        server.close(done);
-      });
-
       beforeAll((done) => {
         const app = createApp();
 
@@ -210,6 +206,10 @@ describe('app', () => {
               done();
             });
         });
+      });
+
+      afterAll((done) => {
+        server.close(done);
       });
 
       it('responds with http status code 404', () => {
@@ -345,10 +345,6 @@ describe('app', () => {
       let statusCode: number;
       let result: { error: string };
 
-      afterAll((done) => {
-        server.close(done);
-      });
-
       beforeAll((done) => {
         const app = createApp();
 
@@ -365,6 +361,10 @@ describe('app', () => {
               done();
             });
         });
+      });
+
+      afterAll((done) => {
+        server.close(done);
       });
 
       it('responds with http status code 404', () => {

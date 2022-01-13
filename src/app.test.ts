@@ -57,6 +57,8 @@ describe('app', () => {
       let statusCode: number;
       let result: { error: string };
 
+      jest.setTimeout(1000 * 30);
+
       beforeAll((done) => {
         const app = createApp();
 
@@ -283,6 +285,8 @@ describe('app', () => {
 
       let statusCode: number;
       let result: { error: string };
+
+      jest.setTimeout(1000 * 30);
 
       beforeAll((done) => {
         const app = createApp();

@@ -380,9 +380,11 @@ describe('FilesController', () => {
         mockedStreamPipe = jest.fn();
 
         const storage = {
-          load: jest.fn(() => ({
-            pipe: mockedStreamPipe
-          }))
+          load: jest.fn(async () =>
+            Promise.resolve({
+              pipe: mockedStreamPipe
+            })
+          )
         };
 
         const controller = new FilesController(

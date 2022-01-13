@@ -5,5 +5,5 @@ export default interface IFileStorage {
 
   delete(path: string): Promise<void>;
 
-  load(path: string): Stream;
+  load(path: string): Promise<Stream>;
 }

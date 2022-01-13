@@ -74,7 +74,7 @@ describe('GcpFileStorage', () => {
   describe('#load', () => {
     let res: Stream;
 
-    beforeAll(() => {
+    beforeAll(async () => {
       const mockedFile = jest.fn(() => ({
         createReadStream: () => new Stream()
       }));
@@ -88,7 +88,7 @@ describe('GcpFileStorage', () => {
         undefined
       );
 
-      res = storage.load(Filename);
+      res = await storage.load(Filename);
     });
 
     it('returns underlying stream', () => {

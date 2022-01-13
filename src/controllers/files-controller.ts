@@ -88,7 +88,7 @@ export default class FilesController {
 
     res.status(200).contentType(info.mimeType);
 
-    const content = this.storage.load(info.path);
+    const content = await this.storage.load(info.path);
 
     content.pipe(res);
 

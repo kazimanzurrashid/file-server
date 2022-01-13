@@ -2,9 +2,9 @@ import { basename } from 'path';
 import { Stream } from 'stream';
 
 import { injectable } from 'tsyringe';
+import { Bucket, Storage } from '@google-cloud/storage';
 
 import IFileStorage from './file-storage';
-import { Bucket, Storage } from '@google-cloud/storage';
 
 @injectable()
 export default class GcpFileStorage implements IFileStorage {
@@ -33,9 +33,11 @@ export default class GcpFileStorage implements IFileStorage {
     await file.delete();
   }
 
-  load(path: string): Stream {
+  async load(path: string): Promise<Stream> {
     const file = this.bucket.file(path);
 
-    return file.createReadStream();
+    const stream = file.createReadStream();
+
+    return Promise.resolve(stream);
   }
 }

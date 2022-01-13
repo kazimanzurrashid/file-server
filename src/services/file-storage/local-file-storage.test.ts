@@ -63,14 +63,14 @@ describe('LocalFileStorage', () => {
   describe('#load', () => {
     let res: Stream;
 
-    beforeAll(() => {
+    beforeAll(async () => {
       const storage = new LocalFileStorage(RootLocation, {
         delete: () => undefined,
         copyFile: () => undefined,
         createReadStream: () => ({} as unknown as ReadStream)
       });
 
-      res = storage.load(Filename);
+      res = await storage.load(Filename);
     });
 
     it('returns underlying stream', () => {

@@ -6,6 +6,7 @@ import { container } from 'tsyringe';
 import express, { Application } from 'express';
 import morgan from 'morgan';
 import { Storage } from '@google-cloud/storage';
+import { S3Client } from '@aws-sdk/client-s3';
 
 import config from './config';
 
@@ -17,6 +18,7 @@ import GcpFileStorage from './services/file-storage/gcp-file-storage';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
+import AwsFileStorage from './services/file-storage/aws-file-storage';
 
 export default function createApp(): Application {
   (() => {
@@ -44,6 +46,8 @@ export default function createApp(): Application {
     });
 
     const createFileStorage = (): IFileStorage => {
+      const fileDelete = promisify(unlink);
+
       switch (config.storageProvider) {
         case 'local': {
           let storagePath = join(rootPath, config.storageFolder);
@@ -56,7 +60,7 @@ export default function createApp(): Application {
           }
 
           return new LocalFileStorage(storagePath, {
-            delete: promisify(unlink),
+            delete: fileDelete,
             copyFile: promisify(copyFile),
             createReadStream
           });
@@ -68,7 +72,17 @@ export default function createApp(): Application {
           return new GcpFileStorage(
             new Storage(opt),
             config.gcpBucket,
-            promisify(unlink)
+            fileDelete
+          );
+        }
+        case 'aws': {
+          return new AwsFileStorage(
+            new S3Client({ region: config.awsRegion }),
+            config.awsBucket,
+            {
+              delete: fileDelete,
+              createReadStream
+            }
           );
         }
         default: {

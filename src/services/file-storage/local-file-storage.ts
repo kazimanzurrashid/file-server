@@ -33,9 +33,11 @@ export default class LocalFileStorage implements IFileStorage {
     return this.fs.delete(fullPath);
   }
 
-  load(path: string): Stream {
+  async load(path: string): Promise<Stream> {
     const fullPath = join(this.storageLocation, path);
 
-    return this.fs.createReadStream(fullPath);
+    const stream = this.fs.createReadStream(fullPath);
+
+    return Promise.resolve(stream);
   }
 }

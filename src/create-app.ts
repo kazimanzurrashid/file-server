@@ -48,7 +48,7 @@ export default function createApp(): Application {
     const createFileStorage = (): IFileStorage => {
       const fileDelete = promisify(unlink);
 
-      switch (config.storageProvider) {
+      switch (config.storageProvider.toLowerCase()) {
         case 'local': {
           let storagePath = join(rootPath, config.storageFolder);
 
@@ -65,6 +65,7 @@ export default function createApp(): Application {
             createReadStream
           });
         }
+        case 'gcp':
         case 'google': {
           // eslint-disable-next-line import/no-dynamic-require,@typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
           const opt = require(config.gcpConfigFile) as Record<string, string>;
@@ -75,7 +76,8 @@ export default function createApp(): Application {
             fileDelete
           );
         }
-        case 'aws': {
+        case 'aws':
+        case 'amazon': {
           return new AwsFileStorage(
             new S3Client({ region: config.awsRegion }),
             config.awsBucket,

@@ -33,11 +33,11 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to "google"', () => {
+  describe('when provider is set to "gcp"', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      config.storageProvider = 'google';
+      config.storageProvider = 'gcp';
       storage = fileStorageProvider();
     });
 
@@ -46,11 +46,11 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to "amazon"', () => {
+  describe('when provider is set to "aws"', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      config.storageProvider = 'amazon';
+      config.storageProvider = 'aws';
       storage = fileStorageProvider();
     });
 
@@ -59,11 +59,11 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to "microsoft"', () => {
+  describe('when provider is set to "az"', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      config.storageProvider = 'microsoft';
+      config.storageProvider = 'az';
       storage = fileStorageProvider();
     });
 
@@ -74,7 +74,7 @@ describe('fileStorageProvider', () => {
 
   describe('when provider is set to anything unknown', () => {
     beforeAll(() => {
-      config.storageProvider = 'ibm';
+      config.storageProvider = 'foo-bar';
     });
 
     it('throws exception', () => {

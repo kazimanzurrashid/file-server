@@ -21,10 +21,10 @@ import InMemoryFileRepository from './services/file-repositoy/in-memory-file-rep
 import LocalFileStorage from './services/file-storage/local-file-storage';
 import GcpFileStorage from './services/file-storage/gcp-file-storage';
 import AwsFileStorage from './services/file-storage/aws-file-storage';
+import AzFileStorage from './services/file-storage/az-file-storage';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
-import AzFileStorage from './services/file-storage/az-file-storage';
 
 export default function createApp(): Application {
   (() => {

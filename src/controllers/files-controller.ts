@@ -36,9 +36,10 @@ export default class FilesController {
       return;
     }
 
-    await this.rateLimit.recordUpload(req.ip);
-
-    const path = await this.storage.put(file.path);
+    const [, path] = await Promise.all([
+      this.rateLimit.recordUpload(req.ip),
+      this.storage.put(file.path)
+    ]);
 
     await this.fileDelete(file.path);
 
@@ -94,10 +95,11 @@ export default class FilesController {
 
     res.status(200).contentType(info.mimeType);
 
-    const content = await this.storage.load(info.path);
+    const [, content] = await Promise.all([
+      this.rateLimit.recordDownload(req.ip),
+      this.storage.load(info.path)
+    ]);
 
     content.pipe(res);
-
-    await this.rateLimit.recordDownload(req.ip);
   }
 }

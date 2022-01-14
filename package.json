@@ -12,7 +12,7 @@
     "coverage": "jest --coverage",
     "build": "rimraf build && tsc",
     "pack": "rimraf dist && ncc build --source-map",
-    "release": "npm run format && npm run lint && npm run test && npm run build && npm run pack"
+    "release": "npm run format && npm run lint && npm run coverage && npm run build && npm run pack"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.46.0",

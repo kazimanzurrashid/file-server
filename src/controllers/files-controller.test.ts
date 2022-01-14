@@ -47,6 +47,7 @@ describe('FilesController', () => {
     });
 
     describe('when daily upload limit already reached', () => {
+      let mockedFileDelete: jest.Mock;
       let mockedResponseStatus: jest.Mock;
       let response: { error?: string };
 
@@ -55,11 +56,13 @@ describe('FilesController', () => {
           canUpload: jest.fn(async () => Promise.resolve(false))
         };
 
+        mockedFileDelete = jest.fn(async () => Promise.resolve());
+
         const controller = new FilesController(
           rateLimit as unknown as IRateLimit,
           undefined,
           undefined,
-          undefined
+          mockedFileDelete
         );
 
         const req = {
@@ -78,6 +81,10 @@ describe('FilesController', () => {
           res as unknown as Response
         );
         response = mockedResponseJson.mock.calls[0][0];
+      });
+
+      it('deletes temporary file', () => {
+        expect(mockedFileDelete).toHaveBeenCalled();
       });
 
       it('sends http status code 429', () => {

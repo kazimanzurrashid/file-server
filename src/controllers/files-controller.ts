@@ -29,6 +29,7 @@ export default class FilesController {
     const canUpload = await this.rateLimit.canUpload(req.ip);
 
     if (!canUpload) {
+      await this.fileDelete(file.path);
       res.status(429).json({
         error: 'You have already reached your daily upload limit!'
       });

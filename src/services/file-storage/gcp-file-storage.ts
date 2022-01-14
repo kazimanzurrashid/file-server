@@ -11,11 +11,11 @@ export default class GcpFileStorage implements IFileStorage {
   private readonly bucket: Bucket;
 
   constructor(
-    private readonly client: Storage,
+    client: Storage,
     bucketName: string,
     private readonly fileDelete: (path: string) => Promise<void>
   ) {
-    this.bucket = this.client.bucket(bucketName);
+    this.bucket = client.bucket(bucketName);
   }
 
   async put(sourcePath: string): Promise<string> {

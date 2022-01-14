@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 
+import { Stream } from 'stream';
+
 import { Storage } from '@google-cloud/storage';
 
 import GcpFileStorage from './gcp-file-storage';
-import { Stream } from 'stream';
 
 describe('GcpFileStorage', () => {
   const Bucket = 'my-bucket';
@@ -11,20 +12,23 @@ describe('GcpFileStorage', () => {
   const FilePath = `/temp/${Filename}`;
 
   describe('#put', () => {
-    let mockedBucket: jest.Mock;
     let mockedBucketUpload: jest.Mock;
     let mockedFileDelete: jest.Mock;
     let path: string;
 
     beforeAll(async () => {
       mockedBucketUpload = jest.fn(async () => Promise.resolve());
-      mockedBucket = jest.fn(() => ({
-        upload: mockedBucketUpload
-      }));
+
+      const client = {
+        bucket: () => ({
+          upload: mockedBucketUpload
+        })
+      };
+
       mockedFileDelete = jest.fn(async () => Promise.resolve());
 
       const storage = new GcpFileStorage(
-        { bucket: mockedBucket } as unknown as Storage,
+        client as unknown as Storage,
         Bucket,
         mockedFileDelete
       );
@@ -46,19 +50,21 @@ describe('GcpFileStorage', () => {
   });
 
   describe('#delete', () => {
-    let mockedBucket: jest.Mock;
-    let mockedFile: jest.Mock;
     let mockedFileDelete: jest.Mock;
 
     beforeAll(async () => {
       mockedFileDelete = jest.fn(async () => Promise.resolve());
-      mockedFile = jest.fn(() => ({ delete: mockedFileDelete }));
-      mockedBucket = jest.fn(() => ({
-        file: mockedFile
-      }));
+
+      const client = {
+        bucket: () => ({
+          file: () => ({
+            delete: mockedFileDelete
+          })
+        })
+      };
 
       const storage = new GcpFileStorage(
-        { bucket: mockedBucket } as unknown as Storage,
+        client as unknown as Storage,
         Bucket,
         undefined
       );
@@ -72,23 +78,33 @@ describe('GcpFileStorage', () => {
   });
 
   describe('#load', () => {
+    let mockedFileCreateReadStream: jest.Mock;
     let res: Stream;
 
     beforeAll(async () => {
-      const mockedFile = jest.fn(() => ({
-        createReadStream: () => new Stream()
-      }));
-      const mockedBucket = jest.fn(() => ({
-        file: mockedFile
-      }));
+      mockedFileCreateReadStream = jest.fn(async () =>
+        Promise.resolve(new Stream())
+      );
+
+      const client = {
+        bucket: () => ({
+          file: () => ({
+            createReadStream: mockedFileCreateReadStream
+          })
+        })
+      };
 
       const storage = new GcpFileStorage(
-        { bucket: mockedBucket } as unknown as Storage,
+        client as unknown as Storage,
         Bucket,
         undefined
       );
 
       res = await storage.load(Filename);
+    });
+
+    it('gets file file', () => {
+      expect(mockedFileCreateReadStream).toHaveBeenCalled();
     });
 
     it('returns underlying stream', () => {

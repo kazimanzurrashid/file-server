@@ -7,6 +7,11 @@ import express, { Application } from 'express';
 import morgan from 'morgan';
 import { Storage } from '@google-cloud/storage';
 import { S3Client } from '@aws-sdk/client-s3';
+import {
+  BlobServiceClient,
+  StorageSharedKeyCredential,
+  newPipeline
+} from '@azure/storage-blob';
 
 import config from './config';
 
@@ -19,6 +24,7 @@ import AwsFileStorage from './services/file-storage/aws-file-storage';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
+import AzFileStorage from './services/file-storage/az-file-storage';
 
 export default function createApp(): Application {
   (() => {
@@ -85,6 +91,24 @@ export default function createApp(): Application {
               delete: fileDelete,
               createReadStream
             }
+          );
+        }
+        case 'az':
+        case 'azure':
+        case 'microsoft': {
+          const sharedKeyCredential = new StorageSharedKeyCredential(
+            config.azStorageAccountName,
+            config.azStorageAccountAccessKey
+          );
+          const pipeline = newPipeline(sharedKeyCredential);
+
+          return new AzFileStorage(
+            new BlobServiceClient(
+              `https://${config.azStorageAccountName}.blob.core.windows.net`,
+              pipeline
+            ),
+            config.azContainerName,
+            fileDelete
           );
         }
         default: {

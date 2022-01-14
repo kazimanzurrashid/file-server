@@ -111,9 +111,12 @@ describe('AwsFileStorage', () => {
       s3SendCommand = mockedS3Send.mock.calls[0][0];
     });
 
-    it('returns file', () => {
+    it('gets file file', () => {
       expect(mockedS3Send).toHaveBeenCalled();
       expect(s3SendCommand).toBeInstanceOf(GetObjectCommand);
+    });
+
+    it('returns file', () => {
       expect(res).toBeDefined();
     });
   });

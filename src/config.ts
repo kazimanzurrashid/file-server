@@ -7,6 +7,12 @@ export default {
   gcpBucket: process.env.GCP_BUCKET || '<PUT_YOUR_GCP_BUCKET_NAME>',
   awsRegion: process.env.AWS_REGION || '<PUT-YOUR_AWS_REGION>',
   awsBucket: process.env.AWS_BUCKET || '<PUT_YOUR_AWS_BUCKET_NAME>',
+  azStorageAccountName:
+    process.env.AZ_STORAGE_ACCOUNT_NAME || '<PUT_YOUR_AZ_STORAGE_ACCOUNT_NAME>',
+  azStorageAccountAccessKey:
+    process.env.AZ_STORAGE_ACCOUNT_ACCESS_KEY ||
+    '<PUT_YOUR_AZ_STORAGE_ACCOUNT_ACCESS_KEY>',
+  azContainerName: process.env.AZ_CONTAINER || 'PUT_YOUR_AZ_STORAGE_CONTAINER',
   maxRateLimit: {
     uploads: parseInt(process.env.MAX_DAILY_UPLOADS || '5', 10),
     downloads: parseInt(process.env.MAX_DAILY_DOWNLOADS || '15', 10)

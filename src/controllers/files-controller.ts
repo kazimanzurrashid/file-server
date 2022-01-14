@@ -33,6 +33,8 @@ export default class FilesController {
       return;
     }
 
+    await this.rateLimit.recordUpload(req.ip);
+
     const path = await this.storage.put(file.path);
     const publicKey = Key.generate();
     const privateKey = Key.generate();
@@ -43,8 +45,6 @@ export default class FilesController {
       path,
       mimeType: file.mimetype
     });
-
-    await this.rateLimit.recordUpload(req.ip);
 
     res.status(201).json({
       publicKey,

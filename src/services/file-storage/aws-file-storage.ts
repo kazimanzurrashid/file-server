@@ -1,6 +1,5 @@
 import { basename } from 'path';
 import { ReadStream } from 'fs';
-import { Stream } from 'stream';
 
 import { injectable } from 'tsyringe';
 
@@ -11,7 +10,7 @@ import {
   S3Client
 } from '@aws-sdk/client-s3';
 
-import IFileStorage from './file-storage';
+import IFileStorage, { IPipeable } from './file-storage';
 
 @injectable()
 export default class AwsFileStorage implements IFileStorage {
@@ -49,7 +48,7 @@ export default class AwsFileStorage implements IFileStorage {
     await this.client.send(command);
   }
 
-  async load(path: string): Promise<Stream> {
+  async load(path: string): Promise<IPipeable> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,
       Key: path
@@ -57,6 +56,6 @@ export default class AwsFileStorage implements IFileStorage {
 
     const res = await this.client.send(command);
 
-    return res.Body as unknown as Stream;
+    return res.Body as IPipeable;
   }
 }

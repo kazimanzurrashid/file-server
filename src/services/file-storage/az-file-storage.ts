@@ -1,5 +1,4 @@
 import { basename } from 'path';
-import { Stream } from 'stream';
 
 import { injectable } from 'tsyringe';
 
@@ -9,7 +8,7 @@ import {
   ContainerClient
 } from '@azure/storage-blob';
 
-import IFileStorage from './file-storage';
+import IFileStorage, { IPipeable } from './file-storage';
 
 @injectable()
 export default class AzFileStorage implements IFileStorage {
@@ -40,7 +39,7 @@ export default class AzFileStorage implements IFileStorage {
     await file.delete();
   }
 
-  async load(path: string): Promise<Stream> {
+  async load(path: string): Promise<IPipeable> {
     const file = this.getFile(path);
 
     const { readableStreamBody } = await file.download();

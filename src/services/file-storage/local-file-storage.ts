@@ -1,10 +1,9 @@
 import { ReadStream } from 'fs';
 import { basename, join } from 'path';
-import { Stream } from 'stream';
 
 import { injectable } from 'tsyringe';
 
-import IFileStorage from './file-storage';
+import IFileStorage, { IPipeable } from './file-storage';
 
 @injectable()
 export default class LocalFileStorage implements IFileStorage {
@@ -33,7 +32,7 @@ export default class LocalFileStorage implements IFileStorage {
     return this.fs.delete(fullPath);
   }
 
-  async load(path: string): Promise<Stream> {
+  async load(path: string): Promise<IPipeable> {
     const fullPath = join(this.storageLocation, path);
 
     const stream = this.fs.createReadStream(fullPath);

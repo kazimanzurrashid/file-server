@@ -3,14 +3,14 @@ import { singleton } from 'tsyringe';
 import Clock from '../../lib/clock';
 import IRateLimit from './rate-limit';
 
-export interface Stat {
+export interface IStat {
   downloads: number;
   uploads: number;
 }
 
 @singleton()
 export default class InMemoryRateLimit implements IRateLimit {
-  private readonly records = new Map<string, Stat>();
+  private readonly records = new Map<string, IStat>();
 
   constructor(private readonly max: { uploads: number; downloads: number }) {}
 
@@ -50,7 +50,7 @@ export default class InMemoryRateLimit implements IRateLimit {
     return Promise.resolve();
   }
 
-  stat(ipAddress: string): Stat {
+  stat(ipAddress: string): IStat {
     return this.localStat(InMemoryRateLimit.createKey(ipAddress));
   }
 
@@ -65,20 +65,20 @@ export default class InMemoryRateLimit implements IRateLimit {
 
   private allowed(
     ipAddress: string,
-    predicate: (stat: Stat) => boolean
+    predicate: (stat: IStat) => boolean
   ): boolean {
     const key = InMemoryRateLimit.createKey(ipAddress);
 
     return predicate(this.localStat(key));
   }
 
-  private record(ipAddress: string, action: (stat: Stat) => Stat): void {
+  private record(ipAddress: string, action: (stat: IStat) => IStat): void {
     const key = InMemoryRateLimit.createKey(ipAddress);
 
     this.records.set(key, action(this.localStat(key)));
   }
 
-  private localStat(key: string): Stat {
+  private localStat(key: string): IStat {
     return this.records.get(key) || { uploads: 0, downloads: 0 };
   }
 }

@@ -1,5 +1,5 @@
 import { container } from 'tsyringe';
-import express, { Application } from 'express';
+import express, { Express } from 'express';
 import morgan from 'morgan';
 
 import config from './config';
@@ -11,7 +11,7 @@ import fileStorageProvider from './services/file-storage/file-storage-provider';
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
 
-export default function createApp(): Application {
+export default function createApp(): Express {
   (() => {
     container.register('RateLimit', {
       useValue: new InMemoryRateLimit({

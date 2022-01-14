@@ -1,7 +1,7 @@
 import { basename } from 'path';
 import { ReadStream } from 'fs';
 
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import {
   DeleteObjectCommand,
@@ -15,12 +15,12 @@ import IFileStorage, { IPipeable } from './file-storage';
 @injectable()
 export default class AwsFileStorage implements IFileStorage {
   constructor(
+    @inject('s3Client')
     private readonly client: S3Client,
+    @inject('awsBucketName')
     private readonly bucketName: string,
-    private readonly fs: {
-      delete: (path: string) => Promise<void>;
-      createReadStream: (path: string) => ReadStream;
-    }
+    @inject('fsCreateReadStream')
+    private readonly fileCreateReadStream: (path: string) => ReadStream
   ) {}
 
   async put(sourcePath: string): Promise<string> {
@@ -29,12 +29,10 @@ export default class AwsFileStorage implements IFileStorage {
     const command = new PutObjectCommand({
       Bucket: this.bucketName,
       Key: filename,
-      Body: this.fs.createReadStream(sourcePath)
+      Body: this.fileCreateReadStream(sourcePath)
     });
 
     await this.client.send(command);
-
-    await this.fs.delete(sourcePath);
 
     return filename;
   }

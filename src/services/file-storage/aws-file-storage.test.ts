@@ -17,7 +17,6 @@ describe('AwsFileStorage', () => {
 
   describe('#put', () => {
     let mockedFileCreateReadStream: jest.Mock;
-    let mockedFileDelete: jest.Mock;
     let mockedS3Send: jest.Mock;
     let s3SendCommand;
 
@@ -25,12 +24,6 @@ describe('AwsFileStorage', () => {
 
     beforeAll(async () => {
       mockedFileCreateReadStream = jest.fn(async () => Promise.resolve({}));
-      mockedFileDelete = jest.fn(async () => Promise.resolve());
-
-      const fs = {
-        delete: mockedFileDelete,
-        createReadStream: mockedFileCreateReadStream
-      };
 
       mockedS3Send = jest.fn(async () => Promise.resolve());
 
@@ -38,7 +31,11 @@ describe('AwsFileStorage', () => {
         send: mockedS3Send
       };
 
-      const storage = new AwsFileStorage(s3 as unknown as S3Client, Bucket, fs);
+      const storage = new AwsFileStorage(
+        s3 as unknown as S3Client,
+        Bucket,
+        mockedFileCreateReadStream
+      );
 
       path = await storage.put(FilePath);
       s3SendCommand = mockedS3Send.mock.calls[0][0];
@@ -51,10 +48,6 @@ describe('AwsFileStorage', () => {
     it('uploads the file', () => {
       expect(mockedS3Send).toHaveBeenCalled();
       expect(s3SendCommand).toBeInstanceOf(PutObjectCommand);
-    });
-
-    it('deletes the source file', () => {
-      expect(mockedFileDelete).toHaveBeenCalled();
     });
 
     it('returns the filename', () => {

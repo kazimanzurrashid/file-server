@@ -1,6 +1,6 @@
 import { basename } from 'path';
 
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 import { Bucket, Storage } from '@google-cloud/storage';
 
 import IFileStorage, { IPipeable } from './file-storage';
@@ -10,9 +10,10 @@ export default class GcpFileStorage implements IFileStorage {
   private readonly bucket: Bucket;
 
   constructor(
+    @inject('storageClient')
     client: Storage,
-    bucketName: string,
-    private readonly fileDelete: (path: string) => Promise<void>
+    @inject('gcpBucketName')
+    bucketName: string
   ) {
     this.bucket = client.bucket(bucketName);
   }
@@ -21,7 +22,6 @@ export default class GcpFileStorage implements IFileStorage {
     const filename = basename(sourcePath);
 
     await this.bucket.upload(sourcePath);
-    await this.fileDelete(sourcePath);
 
     return filename;
   }

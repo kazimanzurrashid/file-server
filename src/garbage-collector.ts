@@ -1,6 +1,5 @@
 import { inject, injectable } from 'tsyringe';
 
-import config from './config';
 import Clock from './lib/clock';
 import IFileRepository from './services/file-repositoy/file-repository';
 import IFileStorage from './services/file-storage/file-storage';
@@ -12,7 +11,9 @@ export default class GarbageCollector {
 
   constructor(
     @inject('FileRepository') private readonly repository: IFileRepository,
-    @inject('FileStorage') private readonly storage: IFileStorage
+    @inject('FileStorage') private readonly storage: IFileStorage,
+    @inject('gcInactiveDuration') private readonly inactiveDuration,
+    @inject('gcInterval') private readonly interval
   ) {}
 
   run(): void {
@@ -28,13 +29,11 @@ export default class GarbageCollector {
     this.timerHandle = setTimeout(async () => {
       await this.cleanup();
       this.enqueue();
-    }, config.garbageCollection.interval);
+    }, this.interval);
   }
 
   private async cleanup(): Promise<void> {
-    const timestamp = new Date(
-      Clock.now().getTime() - config.garbageCollection.inactiveDuration
-    );
+    const timestamp = new Date(Clock.now().getTime() - this.inactiveDuration);
 
     const matched = await this.repository.listInactiveSince(timestamp);
 

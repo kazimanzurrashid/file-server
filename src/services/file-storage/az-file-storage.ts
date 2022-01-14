@@ -1,6 +1,6 @@
 import { basename } from 'path';
 
-import { injectable } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
 import {
   BlobServiceClient,
@@ -15,9 +15,10 @@ export default class AzFileStorage implements IFileStorage {
   private readonly container: ContainerClient;
 
   constructor(
+    @inject('blobClient')
     client: BlobServiceClient,
-    containerName: string,
-    private readonly fileDelete: (path: string) => Promise<void>
+    @inject('azContainerName')
+    containerName: string
   ) {
     this.container = client.getContainerClient(containerName);
   }
@@ -28,7 +29,6 @@ export default class AzFileStorage implements IFileStorage {
     const file = this.getFile(filename);
 
     await file.uploadFile(sourcePath);
-    await this.fileDelete(sourcePath);
 
     return filename;
   }

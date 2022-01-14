@@ -11,7 +11,9 @@ export default class FilesController {
   constructor(
     @inject('RateLimit') private readonly rateLimit: IRateLimit,
     @inject('FileRepository') private readonly repository: IFileRepository,
-    @inject('FileStorage') private readonly storage: IFileStorage
+    @inject('FileStorage') private readonly storage: IFileStorage,
+    @inject('fsUnlink')
+    private readonly fileDelete: (path: string) => Promise<void>
   ) {}
 
   async create(req: Request, res: Response): Promise<void> {
@@ -36,6 +38,9 @@ export default class FilesController {
     await this.rateLimit.recordUpload(req.ip);
 
     const path = await this.storage.put(file.path);
+
+    await this.fileDelete(file.path);
+
     const publicKey = Key.generate();
     const privateKey = Key.generate();
 

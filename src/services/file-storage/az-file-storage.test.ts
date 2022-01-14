@@ -13,7 +13,6 @@ describe('AzFileStorage', () => {
 
   describe('#put', () => {
     let mockedClientFileUpload: jest.Mock;
-    let mockedFileDelete: jest.Mock;
     let path: string;
 
     beforeAll(async () => {
@@ -28,12 +27,9 @@ describe('AzFileStorage', () => {
         })
       };
 
-      mockedFileDelete = jest.fn(async () => Promise.resolve());
-
       const storage = new AzFileStorage(
         client as unknown as BlobServiceClient,
-        Container,
-        mockedFileDelete
+        Container
       );
 
       path = await storage.put(FilePath);
@@ -41,10 +37,6 @@ describe('AzFileStorage', () => {
 
     it('uploads the file', () => {
       expect(mockedClientFileUpload).toHaveBeenCalled();
-    });
-
-    it('deletes the source file', () => {
-      expect(mockedFileDelete).toHaveBeenCalled();
     });
 
     it('returns the filename', () => {
@@ -69,8 +61,7 @@ describe('AzFileStorage', () => {
 
       const storage = new AzFileStorage(
         client as unknown as BlobServiceClient,
-        Container,
-        undefined
+        Container
       );
 
       await storage.delete(Filename);
@@ -101,8 +92,7 @@ describe('AzFileStorage', () => {
 
       const storage = new AzFileStorage(
         client as unknown as BlobServiceClient,
-        Container,
-        undefined
+        Container
       );
 
       res = await storage.load(Filename);

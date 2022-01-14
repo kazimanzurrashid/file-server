@@ -40,6 +40,18 @@ export default function createApp(): Application {
 
     ensureDir(join(rootPath, config.tempFolder));
 
+    container.register('fsUnlink', {
+      useValue: promisify(unlink)
+    });
+
+    container.register('fsCreateReadStream', {
+      useValue: createReadStream
+    });
+
+    container.register('fsCopyFile', {
+      useValue: promisify(copyFile)
+    });
+
     container.register('RateLimit', {
       useValue: new InMemoryRateLimit({
         uploads: config.maxRateLimit.uploads,
@@ -52,8 +64,6 @@ export default function createApp(): Application {
     });
 
     const createFileStorage = (): IFileStorage => {
-      const fileDelete = promisify(unlink);
-
       switch (config.storageProvider.toLowerCase()) {
         case 'local': {
           let storagePath = join(rootPath, config.storageFolder);
@@ -65,33 +75,29 @@ export default function createApp(): Application {
             ensureDir(storagePath);
           }
 
-          return new LocalFileStorage(storagePath, {
-            delete: fileDelete,
-            copyFile: promisify(copyFile),
-            createReadStream
-          });
+          container.register('localStorageLocation', { useValue: storagePath });
+
+          return container.resolve(LocalFileStorage);
         }
         case 'gcp':
         case 'google': {
           // eslint-disable-next-line import/no-dynamic-require,@typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
           const opt = require(config.gcpConfigFile) as Record<string, string>;
+          const client = new Storage(opt);
 
-          return new GcpFileStorage(
-            new Storage(opt),
-            config.gcpBucket,
-            fileDelete
-          );
+          container.register('storageClient', { useValue: client });
+          container.register('gcpBucketName', { useValue: config.gcpBucket });
+
+          return container.resolve(GcpFileStorage);
         }
         case 'aws':
         case 'amazon': {
-          return new AwsFileStorage(
-            new S3Client({ region: config.awsRegion }),
-            config.awsBucket,
-            {
-              delete: fileDelete,
-              createReadStream
-            }
-          );
+          const client = new S3Client({ region: config.awsRegion });
+
+          container.register('s3Client', { useValue: client });
+          container.register('awsBucketName', { useValue: config.awsBucket });
+
+          return container.resolve(AwsFileStorage);
         }
         case 'az':
         case 'azure':
@@ -101,15 +107,17 @@ export default function createApp(): Application {
             config.azStorageAccountAccessKey
           );
           const pipeline = newPipeline(sharedKeyCredential);
-
-          return new AzFileStorage(
-            new BlobServiceClient(
-              `https://${config.azStorageAccountName}.blob.core.windows.net`,
-              pipeline
-            ),
-            config.azContainerName,
-            fileDelete
+          const client = new BlobServiceClient(
+            `https://${config.azStorageAccountName}.blob.core.windows.net`,
+            pipeline
           );
+
+          container.register('blobClient', { useValue: client });
+          container.register('azContainerName', {
+            useValue: config.azContainerName
+          });
+
+          return container.resolve(AzFileStorage);
         }
         default: {
           throw new Error(
@@ -121,6 +129,14 @@ export default function createApp(): Application {
 
     container.register('FileStorage', {
       useValue: createFileStorage()
+    });
+
+    container.register('gcInactiveDuration', {
+      useValue: config.garbageCollection.inactiveDuration
+    });
+
+    container.register('gcInterval', {
+      useValue: config.garbageCollection.interval
     });
   })();
 

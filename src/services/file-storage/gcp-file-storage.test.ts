@@ -14,7 +14,6 @@ describe('GcpFileStorage', () => {
 
   describe('#put', () => {
     let mockedBucketUpload: jest.Mock;
-    let mockedFileDelete: jest.Mock;
     let path: string;
 
     beforeAll(async () => {
@@ -26,23 +25,13 @@ describe('GcpFileStorage', () => {
         })
       };
 
-      mockedFileDelete = jest.fn(async () => Promise.resolve());
-
-      const storage = new GcpFileStorage(
-        client as unknown as Storage,
-        Bucket,
-        mockedFileDelete
-      );
+      const storage = new GcpFileStorage(client as unknown as Storage, Bucket);
 
       path = await storage.put(FilePath);
     });
 
     it('uploads the file', () => {
       expect(mockedBucketUpload).toHaveBeenCalled();
-    });
-
-    it('deletes the source file', () => {
-      expect(mockedFileDelete).toHaveBeenCalled();
     });
 
     it('returns the filename', () => {
@@ -64,11 +53,7 @@ describe('GcpFileStorage', () => {
         })
       };
 
-      const storage = new GcpFileStorage(
-        client as unknown as Storage,
-        Bucket,
-        undefined
-      );
+      const storage = new GcpFileStorage(client as unknown as Storage, Bucket);
 
       await storage.delete(Filename);
     });
@@ -95,11 +80,7 @@ describe('GcpFileStorage', () => {
         })
       };
 
-      const storage = new GcpFileStorage(
-        client as unknown as Storage,
-        Bucket,
-        undefined
-      );
+      const storage = new GcpFileStorage(client as unknown as Storage, Bucket);
 
       res = await storage.load(Filename);
     });

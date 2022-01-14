@@ -12,28 +12,23 @@ describe('LocalFileStorage', () => {
 
   describe('#put', () => {
     let mockedFileCopy: jest.Mock;
-    let mockedDelete: jest.Mock;
     let path: string;
 
     beforeAll(async () => {
-      mockedDelete = jest.fn(async () => Promise.resolve());
       mockedFileCopy = jest.fn(async () => Promise.resolve());
 
-      const storage = new LocalFileStorage(RootLocation, {
-        delete: mockedDelete,
-        copyFile: mockedFileCopy,
-        createReadStream: () => undefined
-      });
+      const storage = new LocalFileStorage(
+        RootLocation,
+        mockedFileCopy,
+        undefined,
+        undefined
+      );
 
       path = await storage.put(FilePath);
     });
 
     it('copies the file', () => {
       expect(mockedFileCopy).toHaveBeenCalled();
-    });
-
-    it('deletes the source file', () => {
-      expect(mockedDelete).toHaveBeenCalled();
     });
 
     it('returns the filename', () => {
@@ -46,11 +41,13 @@ describe('LocalFileStorage', () => {
 
     beforeAll(async () => {
       mockedDelete = jest.fn(async () => Promise.resolve());
-      const storage = new LocalFileStorage(RootLocation, {
-        delete: mockedDelete,
-        copyFile: () => undefined,
-        createReadStream: () => undefined
-      });
+
+      const storage = new LocalFileStorage(
+        RootLocation,
+        undefined,
+        mockedDelete,
+        undefined
+      );
 
       await storage.delete(Filename);
     });
@@ -64,11 +61,12 @@ describe('LocalFileStorage', () => {
     let res: IPipeable;
 
     beforeAll(async () => {
-      const storage = new LocalFileStorage(RootLocation, {
-        delete: () => undefined,
-        copyFile: () => undefined,
-        createReadStream: () => ({} as unknown as ReadStream)
-      });
+      const storage = new LocalFileStorage(
+        RootLocation,
+        undefined,
+        undefined,
+        () => ({} as unknown as ReadStream)
+      );
 
       res = await storage.load(Filename);
     });

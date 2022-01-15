@@ -32,8 +32,8 @@ export default function createApp(): Express {
       useValue: config.garbageCollection.inactiveDuration
     });
 
-    container.register('gcInterval', {
-      useValue: config.garbageCollection.interval
+    container.register('gcCronExpression', {
+      useValue: config.garbageCollection.cronExpression
     });
   })();
 

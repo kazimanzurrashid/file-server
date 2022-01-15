@@ -1,4 +1,5 @@
 import { inject, injectable } from 'tsyringe';
+import { schedule } from 'node-cron';
 
 import Clock from './lib/clock';
 import IFileRepository from './services/file-repositoy/file-repository';
@@ -6,30 +7,17 @@ import IFileStorage from './services/file-storage/file-storage';
 
 @injectable()
 export default class GarbageCollector {
-  // eslint-disable-next-line no-undef
-  private timerHandle: NodeJS.Timeout | undefined;
-
   constructor(
     @inject('FileRepository') private readonly repository: IFileRepository,
     @inject('FileStorage') private readonly storage: IFileStorage,
-    @inject('gcInactiveDuration') private readonly inactiveDuration,
-    @inject('gcInterval') private readonly interval
+    @inject('gcInactiveDuration') private readonly inactiveDuration: number,
+    @inject('gcCronExpression') private readonly cronExpression: string
   ) {}
 
   run(): void {
-    if (this.timerHandle) {
-      clearTimeout(this.timerHandle);
-      this.timerHandle = undefined;
-    }
-
-    this.enqueue();
-  }
-
-  private enqueue(): void {
-    this.timerHandle = setTimeout(async () => {
+    schedule(this.cronExpression, async () => {
       await this.cleanup();
-      this.enqueue();
-    }, this.interval);
+    });
   }
 
   private async cleanup(): Promise<void> {

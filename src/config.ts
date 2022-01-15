@@ -18,7 +18,7 @@ export default {
     downloads: parseInt(process.env.MAX_DAILY_DOWNLOADS || '15', 10)
   },
   garbageCollection: {
-    interval: parseInt(process.env.GC_INTERVAL || '86400000', 10), // 1 day in ms
+    cronExpression: process.env.GC_INACTIVE_CRON || '0 1 * * *', // Run every night @ 1am
     inactiveDuration: parseInt(
       process.env.GC_INACTIVE_DURATION || '1296000000',
       10

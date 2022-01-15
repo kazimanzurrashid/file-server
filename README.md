@@ -1,4 +1,7 @@
 # Notes
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/kazimanzurrashid/file-server/CI)](https://github.com/kazimanzurrashid/file-server/actions)
+[![CodeFactor](https://www.codefactor.io/repository/github/kazimanzurrashid/file-server/badge)](https://www.codefactor.io/repository/github/kazimanzurrashid/file-server)
+[![codecov](https://codecov.io/gh/kazimanzurrashid/file-server/branch/main/graph/badge.svg?token=D96CP60SL3)](https://codecov.io/gh/kazimanzurrashid/file-server)
 
 - Typescript is used.
 - The solution uses in-memory storage for files and rate limit information (but it has the proper abstraction, so adding persistent storage should be trivial), as a consequence restarting the app will lose the data.

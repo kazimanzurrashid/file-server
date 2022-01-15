@@ -1,6 +1,7 @@
 import { container } from 'tsyringe';
 import express, { Express } from 'express';
 import morgan from 'morgan';
+import parse from 'parse-duration';
 
 import config from './config';
 
@@ -29,7 +30,7 @@ export default function createApp(): Express {
     });
 
     container.register('gcInactiveDuration', {
-      useValue: config.garbageCollection.inactiveDuration
+      useValue: parse(config.garbageCollection.inactiveDuration)
     });
 
     container.register('gcCronExpression', {

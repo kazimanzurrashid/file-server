@@ -19,9 +19,6 @@ export default {
   },
   garbageCollection: {
     cronExpression: process.env.GC_INACTIVE_CRON || '0 1 * * *', // Run every night @ 1am
-    inactiveDuration: parseInt(
-      process.env.GC_INACTIVE_DURATION || '1296000000',
-      10
-    ) // 15 days in ms
+    inactiveDuration: process.env.GC_INACTIVE_DURATION || '15d'
   }
 };

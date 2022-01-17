@@ -4,7 +4,7 @@ import express, { Request, Response, Router } from 'express';
 import multer from 'multer';
 
 import config from '../config';
-import Key from '../lib/key';
+import key from '../lib/key';
 import FilesController from '../controllers/files-controller';
 
 const storage = multer.diskStorage({
@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   },
 
   filename: (_, file, cb: (err: Error | null, filename: string) => void) => {
-    const filename = `${Key.generate()}${extname(file.originalname)}`;
+    const filename = `${key.generate()}${extname(file.originalname)}`;
     cb(null, filename);
   }
 });

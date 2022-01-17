@@ -1,7 +1,7 @@
 import { inject, injectable } from 'tsyringe';
 import { Request, Response } from 'express';
 
-import Key from '../lib/key';
+import key from '../lib/key';
 import IRateLimit from '../services/rate-limit/rate-limit';
 import IFileRepository from '../services/file-repositoy/file-repository';
 import IFileStorage from '../services/file-storage/file-storage';
@@ -43,8 +43,8 @@ export default class FilesController {
 
     await this.fileDelete(file.path);
 
-    const publicKey = Key.generate();
-    const privateKey = Key.generate();
+    const publicKey = key.generate();
+    const privateKey = key.generate();
 
     await this.repository.add({
       publicKey,

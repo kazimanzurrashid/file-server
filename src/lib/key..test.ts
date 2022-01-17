@@ -1,15 +1,15 @@
-import Key from './key';
+import key from './key';
 
-describe('Key', () => {
+describe('key', () => {
   describe('#generate', () => {
-    let key: string;
+    let res: string;
 
     beforeAll(() => {
-      key = Key.generate();
+      res = key.generate();
     });
 
     it('it only contains numbers and lower-cased [a-f] characters with length of 32', () => {
-      expect(key).toMatch(/[0-9a-f]{32}/);
+      expect(res).toMatch(/[0-9a-f]{32}/);
     });
   });
 });

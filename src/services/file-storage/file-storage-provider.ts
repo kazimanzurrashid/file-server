@@ -1,4 +1,11 @@
-import { copyFile, createReadStream, mkdirSync, statSync, unlink } from 'fs';
+import {
+  copyFile,
+  createReadStream,
+  mkdirSync,
+  readFileSync,
+  statSync,
+  unlink
+} from 'fs';
 import { isAbsolute, join, resolve } from 'path';
 import { promisify } from 'util';
 
@@ -62,18 +69,30 @@ export default function fileStorageProvider(): IFileStorage {
     }
     case 'gcp':
     case 'google': {
-      const opt =
+      let opt: Record<string, string>;
+
+      if (
         config.gcpConfigFile &&
         statSync(config.gcpConfigFile, {
           throwIfNoEntry: false
         }).isFile()
-          ? // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,import/no-dynamic-require
-            (require(config.gcpConfigFile) as Record<string, string>)
-          : undefined;
+      ) {
+        opt = JSON.parse(readFileSync(config.gcpConfigFile, 'utf8'));
+      }
+
+      let bucket: string;
+
+      if ('bucket' in opt) {
+        bucket = opt.bucket;
+        delete opt['bucket'];
+      }
+
       const client = new Storage(opt);
 
       container.register('storageClient', { useValue: client });
-      container.register('gcpBucketName', { useValue: config.gcpBucket });
+      container.register('gcpBucketName', {
+        useValue: bucket || config.gcpBucket
+      });
 
       return container.resolve(GcpFileStorage);
     }

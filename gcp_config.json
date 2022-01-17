@@ -1,0 +1,4 @@
+{
+  "keyFilename": "<PUT_YOUR_GCP_SERVICE_ACCOUNT_KEY_FILE_LOCATION>",
+  "bucket": "<PUT_YOUR_GCP_BUCKET_NAME>"
+}

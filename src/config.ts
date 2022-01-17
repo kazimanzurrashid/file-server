@@ -2,7 +2,7 @@ export default {
   port: process.env.PORT || '3000',
   storageFolder: process.env.FOLDER || '_storage',
   storageProvider: process.env.PROVIDER || 'local',
-  gcpConfigFile: process.env.CONFIG,
+  gcpConfigFile: process.env.CONFIG || './gcp_config.json',
   tempFolder: process.env.TEMP_FOLDER || '.tmp',
   gcpBucket: process.env.GCP_BUCKET || '<PUT_YOUR_GCP_BUCKET_NAME>',
   awsRegion: process.env.AWS_REGION || '<PUT-YOUR_AWS_REGION>',

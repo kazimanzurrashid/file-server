@@ -1,23 +1,23 @@
-import Clock from './clock';
+import clock from './clock';
 
-describe('Clock', () => {
+describe('clock', () => {
   describe('getting now', () => {
     it('returns current date time', () => {
-      expect(Clock.now().getTime()).toBeLessThanOrEqual(new Date().getTime());
+      expect(clock.now().getTime()).toBeLessThanOrEqual(new Date().getTime());
     });
   });
 
   describe('setting now', () => {
     beforeAll(() => {
-      Clock.now = () => new Date(2000, 3, 15, 17, 45);
+      clock.now = () => new Date(2000, 3, 15, 17, 45);
     });
 
     afterAll(() => {
-      Clock.reset();
+      clock.reset();
     });
 
     it('returns the previously set date time', () => {
-      const now = Clock.now();
+      const now = clock.now();
       expect(now.getFullYear()).toEqual(2000);
       expect(now.getMonth()).toEqual(3);
       expect(now.getDate()).toEqual(15);

@@ -1,6 +1,6 @@
 import { singleton } from 'tsyringe';
 
-import Clock from '../../lib/clock';
+import clock from '../../lib/clock';
 import IFileRepository, { AddFileInfo, IFileInfo } from './file-repository';
 
 @singleton()
@@ -10,7 +10,7 @@ export default class InMemoryFileRepository implements IFileRepository {
   async add(arg: AddFileInfo): Promise<void> {
     const info = {
       ...arg,
-      lastActivity: Clock.now()
+      lastActivity: clock.now()
     };
 
     this.records.push(info);
@@ -34,7 +34,7 @@ export default class InMemoryFileRepository implements IFileRepository {
     const record = this.records.find((fi) => fi.publicKey === publicKey);
 
     if (record) {
-      record.lastActivity = Clock.now();
+      record.lastActivity = clock.now();
     }
 
     return Promise.resolve(record);

@@ -1,6 +1,6 @@
 import { singleton } from 'tsyringe';
 
-import Clock from '../../lib/clock';
+import clock from '../../lib/clock';
 import IRateLimit from './rate-limit';
 
 export interface IStat {
@@ -55,7 +55,7 @@ export default class InMemoryRateLimit implements IRateLimit {
   }
 
   private static createKey(ipAddress: string): string {
-    const now = Clock.now();
+    const now = clock.now();
     const today = `${now.getFullYear()}-${(now.getMonth() + 1)
       .toString()
       .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;

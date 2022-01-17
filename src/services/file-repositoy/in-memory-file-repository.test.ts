@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import Clock from '../../lib/clock';
+import clock from '../../lib/clock';
 import { IFileInfo } from './file-repository';
 import InMemoryFileRepository from './in-memory-file-repository';
 
@@ -16,7 +16,7 @@ describe('InMemoryFileRepository', () => {
       privateKey: PrivateKey,
       path: Path,
       mimeType: MimeType,
-      lastActivity: Clock.now()
+      lastActivity: clock.now()
     };
   };
 
@@ -167,7 +167,7 @@ describe('InMemoryFileRepository', () => {
 
       const repo = new InMemoryFileRepository(records);
 
-      const since = Clock.now();
+      const since = clock.now();
       since.setDate(since.getDate() - 2);
 
       matched = await repo.listInactiveSince(since);

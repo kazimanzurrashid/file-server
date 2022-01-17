@@ -70,6 +70,7 @@ export default function fileStorageProvider(): IFileStorage {
     case 'gcp':
     case 'google': {
       let opt: Record<string, string>;
+      let bucket: string;
 
       if (
         config.gcpConfigFile &&
@@ -78,13 +79,11 @@ export default function fileStorageProvider(): IFileStorage {
         }).isFile()
       ) {
         opt = JSON.parse(readFileSync(config.gcpConfigFile, 'utf8'));
-      }
 
-      let bucket: string;
-
-      if ('bucket' in opt) {
-        bucket = opt.bucket;
-        delete opt['bucket'];
+        if ('bucket' in opt) {
+          bucket = opt.bucket;
+          delete opt['bucket'];
+        }
       }
 
       const client = new Storage(opt);

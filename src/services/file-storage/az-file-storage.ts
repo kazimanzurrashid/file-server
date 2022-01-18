@@ -44,7 +44,7 @@ export default class AzFileStorage implements IFileStorage {
 
     const { readableStreamBody } = await file.download();
 
-    return Promise.resolve(readableStreamBody);
+    return readableStreamBody;
   }
 
   private getFile(path: string): BlockBlobClient {

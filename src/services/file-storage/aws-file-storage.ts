@@ -52,8 +52,8 @@ export default class AwsFileStorage implements IFileStorage {
       Key: path
     });
 
-    const res = await this.client.send(command);
+    const { Body } = await this.client.send(command);
 
-    return res.Body as IPipeable;
+    return Body as IPipeable;
   }
 }

@@ -1,29 +1,28 @@
-import { Router } from 'express';
-
 import FilesController from '../controllers/files-controller';
 import filesRouter from './files-router';
 
 describe('filesRouter', () => {
   describe('/', () => {
-    let router: Router;
+    let match;
     let mockedControllerCreate: jest.Mock;
 
     beforeAll(async () => {
       mockedControllerCreate = jest.fn(async () => Promise.resolve());
-      router = filesRouter({
+      const router = filesRouter({
         create: mockedControllerCreate
       } as unknown as FilesController);
 
-      await router.stack[0].handle({ method: 'POST', headers: [] }, {}, () => {
+      match = router.stack.find((x) => x.route.path === '/');
+
+      await match.handle({ method: 'POST', headers: [] }, {}, () => {
         return;
       });
     });
 
-    it('sets against POST', () => {
-      expect(router.stack[0].route.path).toEqual('/');
-      expect(router.stack[0].route.methods.post).toBeTruthy();
-      expect(router.stack[0].route.stack).toHaveLength(2);
-      expect(router.stack[0].route.stack[0].name).toContain('multer');
+    it('sets against HTTP POST', () => {
+      expect(match.route.methods.post).toBeTruthy();
+      expect(match.route.stack).toHaveLength(2);
+      expect(match.route.stack[0].name).toContain('multer');
     });
 
     it('delegates the call to controller create', () => {
@@ -32,24 +31,25 @@ describe('filesRouter', () => {
   });
 
   describe('/:privateKey', () => {
-    let router: Router;
+    let match;
     let mockedControllerDelete: jest.Mock;
 
     beforeAll(async () => {
       mockedControllerDelete = jest.fn(async () => Promise.resolve());
-      router = filesRouter({
+      const router = filesRouter({
         delete: mockedControllerDelete
       } as unknown as FilesController);
 
-      await router.stack[1].handle({ method: 'DELETE' }, {}, () => {
+      match = router.stack.find((x) => x.route.path === '/:privateKey');
+
+      await match.handle({ method: 'DELETE' }, {}, () => {
         return;
       });
     });
 
-    it('sets against DELETE', () => {
-      expect(router.stack[1].route.path).toEqual('/:privateKey');
-      expect(router.stack[1].route.methods.delete).toBeTruthy();
-      expect(router.stack[1].route.stack).toHaveLength(1);
+    it('sets against HTTP DELETE', () => {
+      expect(match.route.methods.delete).toBeTruthy();
+      expect(match.route.stack).toHaveLength(1);
     });
 
     it('delegates the call to controller delete', () => {
@@ -58,24 +58,25 @@ describe('filesRouter', () => {
   });
 
   describe('/:publicKey', () => {
-    let router: Router;
+    let match;
     let mockedControllerGet: jest.Mock;
 
     beforeAll(async () => {
       mockedControllerGet = jest.fn(async () => Promise.resolve());
-      router = filesRouter({
+      const router = filesRouter({
         get: mockedControllerGet
       } as unknown as FilesController);
 
-      await router.stack[2].handle({ method: 'GET' }, {}, () => {
+      match = router.stack.find((x) => x.route.path === '/:publicKey');
+
+      await match.handle({ method: 'GET' }, {}, () => {
         return;
       });
     });
 
     it('sets against GET', () => {
-      expect(router.stack[2].route.path).toEqual('/:publicKey');
-      expect(router.stack[2].route.methods.get).toBeTruthy();
-      expect(router.stack[2].route.stack).toHaveLength(1);
+      expect(match.route.methods.get).toBeTruthy();
+      expect(match.route.stack).toHaveLength(1);
     });
 
     it('delegates the call to controller get', () => {

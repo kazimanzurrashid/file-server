@@ -14,10 +14,12 @@ describe('openApiRouter', () => {
       expect(router.stack.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('sets against GET', () => {
-      expect(router.stack[2].route.path).toEqual('/');
-      expect(router.stack[2].route.methods.get).toBeTruthy();
-      expect(router.stack[2].route.stack).toHaveLength(1);
+    it('sets against HTTP GET', () => {
+      const match = router.stack.find((x) => !!x.route);
+
+      expect(match.route.path).toEqual('/');
+      expect(match.route.methods.get).toBeTruthy();
+      expect(match.route.stack).toHaveLength(1);
     });
   });
 });

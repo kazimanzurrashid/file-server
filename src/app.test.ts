@@ -383,4 +383,37 @@ describe('app', () => {
       });
     });
   });
+
+  describe('GET /', () => {
+    describe('success', () => {
+      let server: Server;
+
+      let statusCode: number;
+
+      beforeAll((done) => {
+        const app = createApp();
+
+        server = app.listen(() => {
+          request(app)
+            .get('/')
+            .end((err, res) => {
+              if (err) {
+                throw err;
+              }
+
+              statusCode = res.statusCode;
+              done();
+            });
+        });
+      });
+
+      afterAll((done) => {
+        server.close(done);
+      });
+
+      it('responds with http status code 200', () => {
+        expect(statusCode).toEqual(200);
+      });
+    });
+  });
 });

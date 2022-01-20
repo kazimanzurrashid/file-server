@@ -11,6 +11,7 @@ import fileStorageProvider from './services/file-storage/file-storage-provider';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
+import openApiRouter from './routers/open-api-router';
 
 export default function createApp(): Express {
   (() => {
@@ -41,5 +42,6 @@ export default function createApp(): Express {
   return express()
     .disable('x-powered-by')
     .use(morgan('combined'))
-    .use('/files', filesRouter(container.resolve(FilesController)));
+    .use('/files', filesRouter(container.resolve(FilesController)))
+    .use('/', openApiRouter());
 }

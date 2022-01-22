@@ -31,13 +31,13 @@ export default class InMemoryFileRepository implements IFileRepository {
   }
 
   async get(publicKey: string): Promise<IFileInfo | undefined> {
-    const record = this.records.find((fi) => fi.publicKey === publicKey);
+    const info = this.records.find((fi) => fi.publicKey === publicKey);
 
-    if (record) {
-      record.lastActivity = clock.now();
+    if (info) {
+      info.lastActivity = clock.now();
     }
 
-    return Promise.resolve(record);
+    return Promise.resolve(info);
   }
 
   async listInactiveSince(timestamp: Date): Promise<IFileInfo[]> {

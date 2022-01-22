@@ -20,12 +20,19 @@ describe('fileStorageProvider', () => {
     config.storageProvider = originalProvider;
   });
 
-  describe('when provider is set to "local"', () => {
+  describe('local', () => {
+    let originalPath: string;
     let storage: IFileStorage;
 
     beforeAll(() => {
+      originalPath = config.storageFolder;
+      config.storageFolder = '/storage';
       config.storageProvider = 'local';
       storage = fileStorageProvider();
+    });
+
+    afterAll(() => {
+      config.storageFolder = originalPath;
     });
 
     it('returns correct storage', () => {
@@ -33,7 +40,7 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to "gcp"', () => {
+  describe('gcp', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
@@ -46,7 +53,7 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to "aws"', () => {
+  describe('aws', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
@@ -59,7 +66,7 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to "az"', () => {
+  describe('az', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
@@ -72,7 +79,7 @@ describe('fileStorageProvider', () => {
     });
   });
 
-  describe('when provider is set to anything unknown', () => {
+  describe('unknown', () => {
     beforeAll(() => {
       config.storageProvider = 'foo-bar';
     });

@@ -54,10 +54,10 @@ export default function fileStorageProvider(): IFileStorage {
 
   switch (config.storageProvider.toLowerCase()) {
     case 'local': {
-      let storagePath = join(rootPath, config.storageFolder);
+      let storagePath: string;
 
-      if (isAbsolute(config.storageProvider)) {
-        storagePath = config.storageProvider;
+      if (isAbsolute(config.storageFolder)) {
+        storagePath = config.storageFolder;
       } else {
         storagePath = join(rootPath, config.storageFolder);
         ensureDir(storagePath);

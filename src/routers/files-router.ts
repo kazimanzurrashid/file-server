@@ -1,35 +1,14 @@
-import { extname } from 'path';
+import express, { Request, RequestHandler, Response, Router } from 'express';
 
-import express, { Request, Response, Router } from 'express';
-import multer from 'multer';
-
-import config from '../config';
-import key from '../lib/key';
 import FilesController from '../controllers/files-controller';
 
-const storage = multer.diskStorage({
-  destination: (
-    _,
-    __,
-    cb: (err: Error | null, destination: string) => void
-  ) => {
-    cb(null, `${config.tempFolder}/`);
-  },
-
-  filename: (_, file, cb: (err: Error | null, filename: string) => void) => {
-    const filename = `${key.generate()}${extname(file.originalname)}`;
-    cb(null, filename);
-  }
-});
-
-const upload = multer({
-  storage
-}).single('file');
-
-export default function filesRouter(controller: FilesController): Router {
+export default function filesRouter(
+  controller: FilesController,
+  multer: RequestHandler
+): Router {
   const router = express.Router();
 
-  router.post('/', upload, async (req: Request, res: Response) =>
+  router.post('/', multer, async (req: Request, res: Response) =>
     controller.create(req, res)
   );
 

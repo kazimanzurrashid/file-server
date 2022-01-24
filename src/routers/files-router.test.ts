@@ -8,9 +8,14 @@ describe('filesRouter', () => {
 
     beforeAll(async () => {
       mockedControllerCreate = jest.fn(async () => Promise.resolve());
-      const router = filesRouter({
-        create: mockedControllerCreate
-      } as unknown as FilesController);
+      const router = filesRouter(
+        {
+          create: mockedControllerCreate
+        } as unknown as FilesController,
+        (_, __, next) => {
+          return next();
+        }
+      );
 
       match = router.stack.find((x) => x.route.path === '/');
 
@@ -22,7 +27,6 @@ describe('filesRouter', () => {
     it('sets against HTTP POST', () => {
       expect(match.route.methods.post).toBeTruthy();
       expect(match.route.stack).toHaveLength(2);
-      expect(match.route.stack[0].name).toContain('multer');
     });
 
     it('delegates the call to controller create', () => {
@@ -36,9 +40,14 @@ describe('filesRouter', () => {
 
     beforeAll(async () => {
       mockedControllerDelete = jest.fn(async () => Promise.resolve());
-      const router = filesRouter({
-        delete: mockedControllerDelete
-      } as unknown as FilesController);
+      const router = filesRouter(
+        {
+          delete: mockedControllerDelete
+        } as unknown as FilesController,
+        () => {
+          return;
+        }
+      );
 
       match = router.stack.find((x) => x.route.path === '/:privateKey');
 
@@ -63,9 +72,14 @@ describe('filesRouter', () => {
 
     beforeAll(async () => {
       mockedControllerGet = jest.fn(async () => Promise.resolve());
-      const router = filesRouter({
-        get: mockedControllerGet
-      } as unknown as FilesController);
+      const router = filesRouter(
+        {
+          get: mockedControllerGet
+        } as unknown as FilesController,
+        () => {
+          return;
+        }
+      );
 
       match = router.stack.find((x) => x.route.path === '/:publicKey');
 

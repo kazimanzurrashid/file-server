@@ -3,8 +3,8 @@ import filesRouter from './files-router';
 
 describe('filesRouter', () => {
   describe('/', () => {
-    let match;
     let mockedControllerCreate: jest.Mock;
+    let match;
 
     beforeAll(async () => {
       mockedControllerCreate = jest.fn(async () => Promise.resolve());
@@ -12,9 +12,7 @@ describe('filesRouter', () => {
         {
           create: mockedControllerCreate
         } as unknown as FilesController,
-        (_, __, next) => {
-          return next();
-        }
+        (_, __, next) => next()
       );
 
       match = router.stack.find((x) => x.route.path === '/');
@@ -24,19 +22,22 @@ describe('filesRouter', () => {
       });
     });
 
-    it('sets against HTTP POST', () => {
+    it('handles HTTP POST', () => {
       expect(match.route.methods.post).toBeTruthy();
+    });
+
+    it('has multer middleware', () => {
       expect(match.route.stack).toHaveLength(2);
     });
 
-    it('delegates the call to controller create', () => {
+    it('delegates to controller create', () => {
       expect(mockedControllerCreate).toHaveBeenCalled();
     });
   });
 
   describe('/:privateKey', () => {
-    let match;
     let mockedControllerDelete: jest.Mock;
+    let match;
 
     beforeAll(async () => {
       mockedControllerDelete = jest.fn(async () => Promise.resolve());
@@ -56,19 +57,18 @@ describe('filesRouter', () => {
       });
     });
 
-    it('sets against HTTP DELETE', () => {
+    it('handles HTTP DELETE', () => {
       expect(match.route.methods.delete).toBeTruthy();
-      expect(match.route.stack).toHaveLength(1);
     });
 
-    it('delegates the call to controller delete', () => {
+    it('delegates to controller delete', () => {
       expect(mockedControllerDelete).toHaveBeenCalled();
     });
   });
 
   describe('/:publicKey', () => {
-    let match;
     let mockedControllerGet: jest.Mock;
+    let match;
 
     beforeAll(async () => {
       mockedControllerGet = jest.fn(async () => Promise.resolve());
@@ -88,12 +88,11 @@ describe('filesRouter', () => {
       });
     });
 
-    it('sets against GET', () => {
+    it('handles HTTP GET', () => {
       expect(match.route.methods.get).toBeTruthy();
-      expect(match.route.stack).toHaveLength(1);
     });
 
-    it('delegates the call to controller get', () => {
+    it('delegates to controller get', () => {
       expect(mockedControllerGet).toHaveBeenCalled();
     });
   });

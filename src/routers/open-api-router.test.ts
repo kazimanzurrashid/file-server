@@ -14,7 +14,7 @@ describe('openApiRouter', () => {
       expect(router.stack.length).toBeGreaterThanOrEqual(2);
     });
 
-    it('sets against HTTP GET', () => {
+    it('handles HTTP GET', () => {
       const match = router.stack.find((x) => !!x.route);
 
       expect(match.route.path).toEqual('/');

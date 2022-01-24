@@ -72,6 +72,7 @@ export default function createApp(): Express {
 
   return express()
     .disable('x-powered-by')
+    .disable('etag')
     .use(morgan('combined'))
     .use(
       '/files',

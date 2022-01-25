@@ -26,7 +26,7 @@
         },
         "responses": {
           "201": {
-            "description": "Returns the key pair object",
+            "description": "Returns the key pair object upon success",
             "content": {
               "application/json": {
                 "schema": {
@@ -38,7 +38,7 @@
                     },
                     "privateKey": {
                       "type": "string",
-                      "description": "The key that belongs to owner"
+                      "description": "The key that belongs to uploader"
                     }
                   }
                 }
@@ -62,7 +62,7 @@
             }
           },
           "429": {
-            "description": "When upload limit reached",
+            "description": "When upload limit reached for the day",
             "content": {
               "application/json": {
                 "schema": {
@@ -95,10 +95,10 @@
         ],
         "responses": {
           "204": {
-            "description": "No content is returned"
+            "description": "No content is returned upon success"
           },
           "404": {
-            "description": "When file does not exists",
+            "description": "When file does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -118,7 +118,7 @@
     },
     "/files/{publicKey}": {
       "get": {
-        "summary": "Returns the file",
+        "summary": "Returns the file upon success",
         "parameters": [
           {
             "name": "publicKey",
@@ -134,7 +134,7 @@
             "description": "The file"
           },
           "404": {
-            "description": "When file does not exists",
+            "description": "When file does not exist",
             "content": {
               "application/json": {
                 "schema": {
@@ -150,7 +150,7 @@
             }
           },
           "429": {
-            "description": "When download limit reached",
+            "description": "When download limit reached for the day",
             "content": {
               "application/json": {
                 "schema": {

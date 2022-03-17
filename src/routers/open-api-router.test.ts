@@ -3,7 +3,7 @@ import { Router } from 'express';
 import openApiRouter from './open-api-router';
 
 describe('openApiRouter', () => {
-  describe('/', () => {
+  describe('GET /', () => {
     let router: Router;
 
     beforeAll(() => {

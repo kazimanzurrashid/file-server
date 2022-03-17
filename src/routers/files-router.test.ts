@@ -2,7 +2,7 @@ import FilesController from '../controllers/files-controller';
 import filesRouter from './files-router';
 
 describe('filesRouter', () => {
-  describe('/', () => {
+  describe('POST /', () => {
     let mockedControllerCreate: jest.Mock;
     let match;
 
@@ -35,7 +35,7 @@ describe('filesRouter', () => {
     });
   });
 
-  describe('/:privateKey', () => {
+  describe('DELETE /:privateKey', () => {
     let mockedControllerDelete: jest.Mock;
     let match;
 
@@ -66,7 +66,7 @@ describe('filesRouter', () => {
     });
   });
 
-  describe('/:publicKey', () => {
+  describe('GET /:publicKey', () => {
     let mockedControllerGet: jest.Mock;
     let match;
 

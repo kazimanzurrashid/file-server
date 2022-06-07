@@ -145,7 +145,7 @@ describe('app', () => {
     });
   });
 
-  describe('DELETE /files', () => {
+  describe('DELETE /files/:privateKey', () => {
     describe('success', () => {
       let server: Server;
 
@@ -227,7 +227,7 @@ describe('app', () => {
     });
   });
 
-  describe('GET /files', () => {
+  describe('GET /files/:publicKey', () => {
     describe('success', () => {
       let server: Server;
 

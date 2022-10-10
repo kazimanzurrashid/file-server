@@ -427,7 +427,7 @@ describe('FilesController', () => {
         }));
         const res = {
           status: mockedResponseStatus,
-          on: async (_, action: () => Promise<void>) => action()
+          once: async (_, action: () => Promise<void>) => action()
         };
 
         await controller.get(

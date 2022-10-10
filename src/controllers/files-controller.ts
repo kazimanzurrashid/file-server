@@ -94,7 +94,7 @@ export default class FilesController {
       return;
     }
 
-    res.on('finish', async () => {
+    res.once('finish', async () => {
       await this.rateLimit.recordDownload(req.ip);
     });
 

@@ -50,7 +50,8 @@ export default class FilesController {
       publicKey,
       privateKey,
       path,
-      mimeType: file.mimetype
+      mimeType: file.mimetype,
+      size: file.size
     });
 
     res.status(201).json({

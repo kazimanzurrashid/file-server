@@ -3,6 +3,7 @@ export interface IFileInfo {
   privateKey: string;
   mimeType: string;
   path: string;
+  size: number;
   lastActivity: Date;
 }
 

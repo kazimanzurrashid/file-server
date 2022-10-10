@@ -9,5 +9,8 @@ import GarbageCollector from './garbage-collector';
 
 createApp().listen(config.port, () => {
   container.resolve(GarbageCollector).run();
-  container.resolve<Logger>('Logger').info(`Server running on http://localhost:${config.port}/`);
+  container
+    .resolve<Logger>('Logger')
+    // eslint-disable-next-line i18n-text/no-en
+    .info(`Server running on http://localhost:${config.port}/`);
 });

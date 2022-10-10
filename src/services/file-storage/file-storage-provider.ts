@@ -1,13 +1,12 @@
 import {
-  copyFile,
   createReadStream,
   mkdirSync,
-  readFileSync,
   statSync,
-  unlink
 } from 'fs';
+
+import { copyFile, unlink } from 'fs/promises';
+
 import { isAbsolute, join, resolve } from 'path';
-import { promisify } from 'util';
 
 import { container } from 'tsyringe';
 
@@ -41,7 +40,7 @@ export default function fileStorageProvider(): IFileStorage {
   ensureDir(join(rootPath, config.tempFolder));
 
   container.register('fsUnlink', {
-    useValue: promisify(unlink)
+    useValue: unlink
   });
 
   container.register('fsCreateReadStream', {
@@ -49,7 +48,7 @@ export default function fileStorageProvider(): IFileStorage {
   });
 
   container.register('fsCopyFile', {
-    useValue: promisify(copyFile)
+    useValue: copyFile
   });
 
   switch (config.storageProvider.toLowerCase()) {
@@ -69,28 +68,12 @@ export default function fileStorageProvider(): IFileStorage {
     }
     case 'gcp':
     case 'google': {
-      let opt: Record<string, string>;
-      let bucket: string;
-
-      if (
-        config.gcpConfigFile &&
-        statSync(config.gcpConfigFile, {
-          throwIfNoEntry: false
-        }).isFile()
-      ) {
-        opt = JSON.parse(readFileSync(config.gcpConfigFile, 'utf8'));
-
-        if ('bucket' in opt) {
-          bucket = opt.bucket;
-          delete opt['bucket'];
-        }
-      }
-
-      const client = new Storage(opt);
-
+      const client = new Storage({
+        keyFilename: config.gcpKeyFileLocation
+      });
       container.register('storageClient', { useValue: client });
       container.register('gcpBucketName', {
-        useValue: bucket || config.gcpBucket
+        useValue: config.gcpBucket
       });
 
       return container.resolve(GcpFileStorage);

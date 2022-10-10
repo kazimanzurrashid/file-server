@@ -174,7 +174,7 @@ describe('InMemoryFileRepository', () => {
       const since = clock.now();
       since.setDate(since.getDate() - 2);
 
-      matched = await repo.listInactiveSince(since);
+      matched = await repo.listInactiveSince(since, 20);
     });
 
     it('returns the matching files', () => {

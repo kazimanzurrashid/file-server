@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { schedule } from 'node-cron';
 
 import clock from './lib/clock';
-import IFileRepository from './services/file-repositoy/file-repository';
+import IFileRepository, { IFileInfo } from './services/file-repositoy/file-repository';
 import IFileStorage from './services/file-storage/file-storage';
 
 @injectable()
@@ -23,13 +23,18 @@ export default class GarbageCollector {
   private async cleanup(): Promise<void> {
     const timestamp = new Date(clock.now().getTime() - this.inactiveDuration);
 
-    const matched = await this.repository.listInactiveSince(timestamp);
+    let matched: IFileInfo[];
 
-    const tasks = matched.map(async (fi) => {
-      await this.repository.delete(fi.privateKey);
-      await this.storage.delete(fi.path);
-    });
+    do {
+      matched = await this.repository.listInactiveSince(timestamp);
 
-    await Promise.all(tasks);
+      const tasks = matched.map(async (fi) => {
+        await this.storage.delete(fi.path);
+        await this.repository.delete(fi.privateKey);
+      });
+
+      await Promise.all(tasks);
+
+    } while (matched.length)
   }
 }

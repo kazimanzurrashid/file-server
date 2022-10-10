@@ -16,5 +16,5 @@ export default interface IFileRepository {
 
   get(publicKey: string): Promise<IFileInfo | undefined>;
 
-  listInactiveSince(timestamp: Date): Promise<IFileInfo[]>;
+  listInactiveSince(timestamp: Date, max?: number): Promise<IFileInfo[]>;
 }

@@ -40,10 +40,10 @@ export default class InMemoryFileRepository implements IFileRepository {
     return Promise.resolve(info);
   }
 
-  async listInactiveSince(timestamp: Date): Promise<IFileInfo[]> {
+  async listInactiveSince(timestamp: Date, max: number = 25): Promise<IFileInfo[]> {
     const filtered = this.records.filter(
       (fi) => fi.lastActivity.getTime() <= timestamp.getTime()
-    );
+    ).slice(0, max);
 
     return Promise.resolve(filtered);
   }

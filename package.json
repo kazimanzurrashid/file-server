@@ -5,7 +5,7 @@
   "license": "MIT",
   "main": "build/index.js",
   "scripts": {
-    "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --ignore \"src/**/*.test.ts\" --exec \"node_modules/.bin/ts-node src/index.ts",
+    "start": "nodemon src/index.ts",
     "format": "prettier --write ./**/*.ts",
     "lint": "eslint ./ --fix",
     "test": "jest",

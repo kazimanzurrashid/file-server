@@ -2,7 +2,7 @@ import { extname } from 'path';
 
 import { container } from 'tsyringe';
 import express, { Express } from 'express';
-import morgan from 'morgan';
+import Pino, { Logger } from 'pino';
 import multer from 'multer';
 import parse from 'parse-duration';
 
@@ -68,12 +68,20 @@ export default function createApp(): Express {
     container.register('gcCronExpression', {
       useValue: config.garbageCollection.cronExpression
     });
+
+    container.register('Logger', { useValue: Pino() });
   })();
 
   return express()
     .disable('x-powered-by')
     .disable('etag')
-    .use(morgan('combined'))
+    .use(
+      // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
+      require('express-pino-logger')({
+        logger: container.resolve<Logger>('Logger')
+      })
+    )
+    .use(express.json())
     .use(
       '/files',
       filesRouter(

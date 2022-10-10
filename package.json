@@ -9,7 +9,7 @@
     "format": "prettier --write ./**/*.ts",
     "lint": "eslint ./ --fix",
     "test": "jest",
-    "coverage": "jest --coverage",
+    "coverage": "jest --ci --coverage",
     "build": "rimraf build && tsc",
     "pack": "rimraf dist && ncc build ./build/src/index.js --source-map",
     "copy-other-required-files": "ts-node copy-other-required-files.ts",

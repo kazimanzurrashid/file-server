@@ -8,7 +8,7 @@
     "/files": {
       "post": {
         "tags": [
-          "Files"
+          "File"
         ],
         "summary": "Uploads a file",
         "requestBody": {
@@ -25,7 +25,8 @@
                 }
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "201": {
@@ -53,29 +54,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "description": "The error message"
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorResponse"
                 }
               }
             }
           },
           "429": {
-            "description": "When upload limit reached for the day",
+            "description": "When upload limit already reached for the day",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "description": "The error message"
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorResponse"
                 }
               }
             }
@@ -86,7 +75,7 @@
     "/files/{privateKey}": {
       "delete": {
         "tags": [
-          "Files"
+          "File"
         ],
         "summary": "Deletes the file",
         "parameters": [
@@ -108,13 +97,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "description": "The error message"
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorResponse"
                 }
               }
             }
@@ -125,7 +108,7 @@
     "/files/{publicKey}": {
       "get": {
         "tags": [
-          "Files"
+          "File"
         ],
         "summary": "Returns the file upon success",
         "parameters": [
@@ -147,32 +130,33 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "description": "The error message"
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorResponse"
                 }
               }
             }
           },
           "429": {
-            "description": "When download limit reached for the day",
+            "description": "When download limit already reached for the day",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "error": {
-                      "type": "string",
-                      "description": "The error message"
-                    }
-                  }
+                  "$ref": "#/components/schemas/errorResponse"
                 }
               }
             }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "errorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string",
+            "description": "The error message"
           }
         }
       }

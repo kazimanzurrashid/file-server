@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe';
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import key from '../lib/key';
 import IRateLimit from '../services/rate-limit/rate-limit';

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { join, resolve } from 'path';
-import { Server } from 'http';
+import type { Server } from 'http';
 
 import request from 'supertest';
 
@@ -12,12 +12,10 @@ type ErrorResult = {
   error: string;
 };
 
-function range(start: number, end: number): number[] {
-  return Array.from({ length: end + 1 - start }, (_, i) => start + i);
-}
-
-describe('app', () => {
+describe('integrations', () => {
   const file = join(resolve(), 'requirements.pdf');
+  const range = (start: number, end: number): number[] =>
+    Array.from({ length: end + 1 - start }, (_, i) => start + i);
 
   describe('POST /files', () => {
     describe('success', () => {
@@ -346,30 +344,61 @@ describe('app', () => {
 
       let statusCode: number;
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          request(app)
-            .get('/')
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
+          server = app.listen(async () => {
+            const res = await request(app).get('/');
 
-              statusCode = res.statusCode;
-              done();
-            });
+            statusCode = res.statusCode;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 200', () => {
         expect(statusCode).toEqual(200);
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
+    });
+  });
+
+  describe('ALL OTHER STUFFS', () => {
+    let server: Server;
+
+    let statusCode: number;
+    let result: ErrorResult;
+
+    beforeAll(async () => {
+      return new Promise<void>((done) => {
+        const app = createApp();
+
+        server = app.listen(async () => {
+          const response = await request(app).get('/foo-bar');
+
+          statusCode = response.statusCode;
+          result = response.body;
+
+          done();
+        });
+      });
+    });
+
+    it('responds with http status code 404', () => {
+      expect(statusCode).toEqual(404);
+    });
+
+    it('returns error', () => {
+      expect(result.error).toBeDefined();
+    });
+
+    afterAll((done) => {
+      server.close(done);
     });
   });
 });

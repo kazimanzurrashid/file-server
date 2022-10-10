@@ -1,9 +1,9 @@
 import { extname } from 'path';
 
-import { container } from 'tsyringe';
-import express, { Express } from 'express';
-import Pino, { Logger } from 'pino';
+import express, { Express, Response } from 'express';
 import multer from 'multer';
+import { container } from 'tsyringe';
+import Pino, { Logger } from 'pino';
 import parse from 'parse-duration';
 
 import config from './config';
@@ -89,5 +89,10 @@ export default function createApp(): Express {
         container.resolve('multer')
       )
     )
-    .use('/', openApiRouter());
+    .use('/', openApiRouter())
+    .all('*', (_, res: Response) => {
+      res.status(404).json({
+        error: 'Resource not found'
+      });
+    });
 }

@@ -1,8 +1,11 @@
 import { readFileSync } from 'fs';
 import { join, resolve } from 'path';
 
-import express, { Router } from 'express';
-import { JsonObject, serve, setup } from 'swagger-ui-express';
+import type { Router } from 'express';
+import express from 'express';
+
+import type { JsonObject } from 'swagger-ui-express';
+import { serve, setup } from 'swagger-ui-express';
 
 export default function openApiRouter(): Router {
   const getDocument = (): JsonObject => {

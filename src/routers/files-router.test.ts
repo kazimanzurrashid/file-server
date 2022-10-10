@@ -15,15 +15,11 @@ describe('filesRouter', () => {
         (_, __, next) => next()
       );
 
-      match = router.stack.find((x) => x.route.path === '/');
+      match = router.stack.find((x) => x.route.path === '/' && x.route.methods.post);
 
       await match.handle({ method: 'POST', headers: [] }, {}, () => {
         return;
       });
-    });
-
-    it('handles HTTP POST', () => {
-      expect(match.route.methods.post).toBeTruthy();
     });
 
     it('has multer middleware', () => {
@@ -50,15 +46,11 @@ describe('filesRouter', () => {
         }
       );
 
-      match = router.stack.find((x) => x.route.path === '/:privateKey');
+      match = router.stack.find((x) => x.route.path === '/:privateKey' && x.route.methods.delete);
 
       await match.handle({ method: 'DELETE' }, {}, () => {
         return;
       });
-    });
-
-    it('handles HTTP DELETE', () => {
-      expect(match.route.methods.delete).toBeTruthy();
     });
 
     it('delegates to controller delete', () => {
@@ -81,15 +73,11 @@ describe('filesRouter', () => {
         }
       );
 
-      match = router.stack.find((x) => x.route.path === '/:publicKey');
+      match = router.stack.find((x) => x.route.path === '/:publicKey' && x.route.methods.get);
 
       await match.handle({ method: 'GET' }, {}, () => {
         return;
       });
-    });
-
-    it('handles HTTP GET', () => {
-      expect(match.route.methods.get).toBeTruthy();
     });
 
     it('delegates to controller get', () => {

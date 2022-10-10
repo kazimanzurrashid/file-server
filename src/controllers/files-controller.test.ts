@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 
 import FilesController from './files-controller';
 import IFileRepository from '../services/file-repositoy/file-repository';

@@ -8,6 +8,14 @@ import request from 'supertest';
 import createApp from './create-app';
 import config from './config';
 
+type ErrorResult = {
+  error: string;
+};
+
+function range(start: number, end: number): number[] {
+  return Array.from({ length: end + 1 - start }, (_, i) => start + i);
+}
+
 describe('app', () => {
   const file = join(resolve(), 'requirements.pdf');
 
@@ -18,27 +26,19 @@ describe('app', () => {
       let statusCode: number;
       let result: { publicKey: string; privateKey: string };
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          request(app)
-            .post('/files')
-            .attach('file', file)
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
+          server = app.listen(async () => {
+            const res = await request(app).post('/files').attach('file', file);
 
-              statusCode = res.statusCode;
-              result = res.body;
-              done();
-            });
+            statusCode = res.statusCode;
+            result = res.body;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 201', () => {
@@ -49,49 +49,41 @@ describe('app', () => {
         expect(result.publicKey).toBeDefined();
         expect(result.privateKey).toBeDefined();
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
     });
 
     describe('when daily upload limit already reached', () => {
       let server: Server;
 
       let statusCode: number;
-      let result: { error: string };
+      let result: ErrorResult;
 
       jest.setTimeout(1000 * 30);
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          const api = request(app);
-          const max = config.maxRateLimit.uploads;
+          server = app.listen(async () => {
+            const api = request(app);
 
-          for (let i = 0; i <= max; i++) {
-            ((counter: number) => {
-              setTimeout(() => {
-                api
-                  .post('/files')
-                  .attach('file', file)
-                  .end((err, res) => {
-                    if (err) {
-                      throw err;
-                    }
+            await Promise.all(
+              range(1, config.maxRateLimit.uploads).map(async () => {
+                await api.post('/files').attach('file', file);
+              })
+            );
 
-                    statusCode = res.statusCode;
-                    result = res.body;
+            const res = await api.post('/files').attach('file', file);
 
-                    if (counter === max) {
-                      done();
-                    }
-                  });
-              }, 100 * counter);
-            })(i);
-          }
+            statusCode = res.statusCode;
+            result = res.body;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 429', () => {
@@ -104,34 +96,31 @@ describe('app', () => {
           'You have already reached your daily upload limit!'
         );
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
     });
 
     describe('when no file is provided', () => {
       let server: Server;
 
       let statusCode: number;
-      let result: { error: string };
+      let result: ErrorResult;
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          request(app)
-            .post('/files')
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
+          server = app.listen(async () => {
+            const res = await request(app).post('/files');
 
-              statusCode = res.statusCode;
-              result = res.body;
-              done();
-            });
+            statusCode = res.statusCode;
+            result = res.body;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 422', () => {
@@ -142,6 +131,10 @@ describe('app', () => {
         // eslint-disable-next-line i18n-text/no-en
         expect(result.error).toEqual('File is required!');
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
     });
   });
 
@@ -151,38 +144,29 @@ describe('app', () => {
 
       let statusCode: number;
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          const api = request(app);
+          server = app.listen(async () => {
+            const api = request(app);
 
-          api
-            .post('/files')
-            .attach('file', file)
-            .end((err1, res1) => {
-              if (err1) {
-                throw err1;
-              }
+            const res1 = await api.post('/files').attach('file', file);
+            const res2 = await api.delete(`/files/${res1.body.privateKey}`);
 
-              api.delete(`/files/${res1.body.privateKey}`).end((err2, res2) => {
-                if (err2) {
-                  throw err1;
-                }
+            statusCode = res2.statusCode;
 
-                statusCode = res2.statusCode;
-                done();
-              });
-            });
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 204', () => {
         expect(statusCode).toEqual(204);
+      });
+
+      afterAll((done) => {
+        server.close(done);
       });
     });
 
@@ -190,28 +174,21 @@ describe('app', () => {
       let server: Server;
 
       let statusCode: number;
-      let result: { error: string };
+      let result: ErrorResult;
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          request(app)
-            .delete('/files/i-dont-exist')
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
+          server = app.listen(async () => {
+            const res = await request(app).delete('/files/i-dont-exist');
 
-              statusCode = res.statusCode;
-              result = res.body;
-              done();
-            });
+            statusCode = res.statusCode;
+            result = res.body;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 404', () => {
@@ -224,6 +201,10 @@ describe('app', () => {
           'File does not exist!'
         );
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
     });
   });
 
@@ -235,36 +216,24 @@ describe('app', () => {
       let contentType: string;
       let body: Buffer;
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          const api = request(app);
+          server = app.listen(async () => {
+            const api = request(app);
 
-          api
-            .post('/files')
-            .attach('file', file)
-            .end((err1, res1) => {
-              if (err1) {
-                throw err1;
-              }
+            const res1 = await api.post('/files').attach('file', file);
 
-              api.get(`/files/${res1.body.publicKey}`).end((err2, res2) => {
-                if (err2) {
-                  throw err1;
-                }
+            const res2 = await api.get(`/files/${res1.body.publicKey}`);
 
-                statusCode = res2.statusCode;
-                contentType = res2.headers['content-type'];
-                body = res2.body;
-                done();
-              });
-            });
+            statusCode = res2.statusCode;
+            contentType = res2.headers['content-type'];
+            body = res2.body;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 200', () => {
@@ -278,57 +247,43 @@ describe('app', () => {
       it('returns file body', () => {
         expect(body).toBeDefined();
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
     });
 
     describe('when daily download limit already reached', () => {
       let server: Server;
 
       let statusCode: number;
-      let result: { error: string };
+      let result: ErrorResult;
 
       jest.setTimeout(1000 * 30);
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          const api = request(app);
-          api
-            .post('/files')
-            .attach('file', file)
-            .end((err1, res1) => {
-              if (err1) {
-                throw err1;
-              }
+          server = app.listen(async () => {
+            const api = request(app);
 
-              const publicKey = res1.body.publicKey;
+            const res1 = await api.post('/files').attach('file', file);
 
-              const max = config.maxRateLimit.downloads;
+            await Promise.all(
+              range(1, config.maxRateLimit.downloads).map(async () => {
+                await api.get(`/files/${res1.body.publicKey}`);
+              })
+            );
 
-              for (let i = 0; i <= max; i++) {
-                ((counter: number) => {
-                  setTimeout(() => {
-                    api.get(`/files/${publicKey}`).end((err2, res2) => {
-                      if (err2) {
-                        throw err2;
-                      }
+            const res2 = await api.get(`/files/${res1.body.publicKey}`);
 
-                      statusCode = res2.statusCode;
-                      result = res2.body;
+            statusCode = res2.statusCode;
+            result = res2.body;
 
-                      if (counter === max) {
-                        done();
-                      }
-                    });
-                  }, 100 * counter);
-                })(i);
-              }
-            });
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 429', () => {
@@ -341,34 +296,31 @@ describe('app', () => {
           'You have already reached your daily download limit!'
         );
       });
+
+      afterAll((done) => {
+        server.close(done);
+      });
     });
 
     describe('when file does not exist', () => {
       let server: Server;
 
       let statusCode: number;
-      let result: { error: string };
+      let result: ErrorResult;
 
-      beforeAll((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((done) => {
+          const app = createApp();
 
-        server = app.listen(() => {
-          request(app)
-            .get('/files/i-dont-exist')
-            .end((err, res) => {
-              if (err) {
-                throw err;
-              }
+          server = app.listen(async () => {
+            const res = await request(app).get('/files/i-dont-exist');
 
-              statusCode = res.statusCode;
-              result = res.body;
-              done();
-            });
+            statusCode = res.statusCode;
+            result = res.body;
+
+            done();
+          });
         });
-      });
-
-      afterAll((done) => {
-        server.close(done);
       });
 
       it('responds with http status code 404', () => {
@@ -380,6 +332,10 @@ describe('app', () => {
           // eslint-disable-next-line i18n-text/no-en
           'File does not exist!'
         );
+      });
+
+      afterAll((done) => {
+        server.close(done);
       });
     });
   });

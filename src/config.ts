@@ -15,7 +15,7 @@ export default {
   azContainerName: process.env.AZ_CONTAINER || 'PUT_YOUR_AZ_STORAGE_CONTAINER',
   maxRateLimit: {
     uploads: parseInt(process.env.MAX_DAILY_UPLOADS || '5', 10),
-    downloads: parseInt(process.env.MAX_DAILY_DOWNLOADS || '15', 10)
+    downloads: parseInt(process.env.MAX_DAILY_DOWNLOADS || '3', 10)
   },
   garbageCollection: {
     cronExpression: process.env.GC_INACTIVE_CRON || '0 1 * * *', // Run every night @ 1am

@@ -7,15 +7,17 @@ import InMemoryFileRepository from './in-memory-file-repository';
 describe('InMemoryFileRepository', () => {
   const PublicKey = 'public-key';
   const PrivateKey = 'private-key';
-  const Path = '/my_photo.jpg';
   const MimeType = 'image/png';
+  const Path = '/my_photo.jpg';
+  const Size = 100;
 
   const createFileInfo = (): IFileInfo => {
     return {
       publicKey: PublicKey,
       privateKey: PrivateKey,
-      path: Path,
       mimeType: MimeType,
+      path: Path,
+      size: Size,
       lastActivity: clock.now()
     };
   };
@@ -28,8 +30,9 @@ describe('InMemoryFileRepository', () => {
       await repo.add({
         publicKey: PublicKey,
         privateKey: PrivateKey,
+        mimeType: MimeType,
         path: Path,
-        mimeType: MimeType
+        size: Size
       });
     });
 
@@ -39,8 +42,9 @@ describe('InMemoryFileRepository', () => {
       expect(info).toBeDefined();
       expect(info.publicKey).toEqual(PublicKey);
       expect(info.privateKey).toEqual(PrivateKey);
-      expect(info.path).toEqual(Path);
       expect(info.mimeType).toEqual(MimeType);
+      expect(info.path).toEqual(Path);
+      expect(info.size).toEqual(Size);
       expect(info.lastActivity).toBeDefined();
     });
   });

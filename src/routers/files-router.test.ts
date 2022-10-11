@@ -15,7 +15,9 @@ describe('filesRouter', () => {
         (_, __, next) => next()
       );
 
-      match = router.stack.find((x) => x.route.path === '/' && x.route.methods.post);
+      match = router.stack.find(
+        (x) => x.route.path === '/' && x.route.methods.post
+      );
 
       await match.handle({ method: 'POST', headers: [] }, {}, () => {
         return;
@@ -46,7 +48,9 @@ describe('filesRouter', () => {
         }
       );
 
-      match = router.stack.find((x) => x.route.path === '/:privateKey' && x.route.methods.delete);
+      match = router.stack.find(
+        (x) => x.route.path === '/:privateKey' && x.route.methods.delete
+      );
 
       await match.handle({ method: 'DELETE' }, {}, () => {
         return;
@@ -73,7 +77,9 @@ describe('filesRouter', () => {
         }
       );
 
-      match = router.stack.find((x) => x.route.path === '/:publicKey' && x.route.methods.get);
+      match = router.stack.find(
+        (x) => x.route.path === '/:publicKey' && x.route.methods.get
+      );
 
       await match.handle({ method: 'GET' }, {}, () => {
         return;

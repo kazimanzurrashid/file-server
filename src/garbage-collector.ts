@@ -2,7 +2,9 @@ import { inject, injectable } from 'tsyringe';
 import { schedule } from 'node-cron';
 
 import clock from './lib/clock';
-import IFileRepository, { IFileInfo } from './services/file-repositoy/file-repository';
+import IFileRepository, {
+  IFileInfo
+} from './services/file-repositoy/file-repository';
 import IFileStorage from './services/file-storage/file-storage';
 
 @injectable()
@@ -34,7 +36,6 @@ export default class GarbageCollector {
       });
 
       await Promise.all(tasks);
-
-    } while (matched.length)
+    } while (matched.length);
   }
 }

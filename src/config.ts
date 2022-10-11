@@ -1,9 +1,10 @@
 export default {
   port: process.env.PORT || '3000',
-  storageFolder: process.env.FOLDER || '_storage',
-  storageProvider: process.env.PROVIDER || 'local',
 
   tempFolder: process.env.TEMP_FOLDER || '.tmp',
+
+  storageFolder: process.env.FOLDER || '_storage',
+  storageProvider: process.env.PROVIDER || 'local', // supported values: local, aws, gcp, az
 
   gcpKeyFileLocation:
     process.env.GCP_KEY_FILE_LOCATION ||
@@ -18,15 +19,22 @@ export default {
   azStorageAccountAccessKey:
     process.env.AZ_STORAGE_ACCOUNT_ACCESS_KEY ||
     '<PUT_YOUR_AZ_STORAGE_ACCOUNT_ACCESS_KEY>',
-  azContainerName: process.env.AZ_CONTAINER || 'PUT_YOUR_AZ_STORAGE_CONTAINER',
+  azContainerName:
+    process.env.AZ_CONTAINER || '<PUT_YOUR_AZ_STORAGE_CONTAINER>',
 
-  maxRateLimit: {
-    uploads: parseInt(process.env.MAX_DAILY_UPLOADS || '5', 10),
-    downloads: parseInt(process.env.MAX_DAILY_DOWNLOADS || '25', 10)
+  rateLimit: {
+    provider: process.env.RATE_LIMIT || 'in-memory', // supported values: in-memory, redis
+    max: {
+      uploads: Number(process.env.MAX_DAILY_UPLOADS || '5'),
+      downloads: Number(process.env.MAX_DAILY_DOWNLOADS || '25')
+    },
+    redis: {
+      url: process.env.REDIS_URI || '<PUT_YOUR_REDIS_URL>'
+    }
   },
 
   garbageCollection: {
     cronExpression: process.env.GC_INACTIVE_CRON || '0 1 * * *', // Run every night @ 1am
-    inactiveDuration: process.env.GC_INACTIVE_DURATION || '90d'
+    inactiveDuration: process.env.GC_INACTIVE_DURATION || '14d'
   }
 };

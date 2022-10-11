@@ -1,9 +1,9 @@
-import { singleton } from 'tsyringe';
+import { injectable } from 'tsyringe';
 
 import clock from '../../lib/clock';
 import IFileRepository, { AddFileInfo, IFileInfo } from './file-repository';
 
-@singleton()
+@injectable()
 export default class InMemoryFileRepository implements IFileRepository {
   constructor(private readonly records: IFileInfo[] = []) {}
 
@@ -40,10 +40,10 @@ export default class InMemoryFileRepository implements IFileRepository {
     return Promise.resolve(info);
   }
 
-  async listInactiveSince(timestamp: Date, max: number = 25): Promise<IFileInfo[]> {
-    const filtered = this.records.filter(
-      (fi) => fi.lastActivity.getTime() <= timestamp.getTime()
-    ).slice(0, max);
+  async listInactiveSince(timestamp: Date, max = 25): Promise<IFileInfo[]> {
+    const filtered = this.records
+      .filter((fi) => fi.lastActivity.getTime() <= timestamp.getTime())
+      .slice(0, max);
 
     return Promise.resolve(filtered);
   }

@@ -11,7 +11,7 @@ describe('AzFileStorage', () => {
   const Filename = 'my-file.png';
   const FilePath = `/temp/${Filename}`;
 
-  describe('#put', () => {
+  describe('put', () => {
     let mockedClientFileUpload: jest.Mock;
     let path: string;
 
@@ -44,7 +44,7 @@ describe('AzFileStorage', () => {
     });
   });
 
-  describe('#delete', () => {
+  describe('delete', () => {
     let mockedClientFileDelete: jest.Mock;
 
     beforeAll(async () => {
@@ -72,7 +72,7 @@ describe('AzFileStorage', () => {
     });
   });
 
-  describe('#load', () => {
+  describe('load', () => {
     let mockedClientFileDownload: jest.Mock;
     let res: IPipeable;
 

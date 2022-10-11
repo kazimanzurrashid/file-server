@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
-import { join, resolve } from 'path';
-import type { Server } from 'http';
+import { join, resolve as pathResolve } from 'path';
+import { Server } from 'http';
 
 import request from 'supertest';
 
@@ -13,7 +13,7 @@ type ErrorResult = {
 };
 
 describe('integrations', () => {
-  const file = join(resolve(), 'requirements.pdf');
+  const file = join(pathResolve(), 'requirements.pdf');
   const range = (start: number, end: number): number[] =>
     Array.from({ length: end + 1 - start }, (_, i) => start + i);
 
@@ -25,17 +25,27 @@ describe('integrations', () => {
       let result: { publicKey: string; privateKey: string };
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const res = await request(app).post('/files').attach('file', file);
+            server = app.listen(async () => {
+              try {
+                const res = await request(app)
+                  .post('/files')
+                  .attach('file', file);
 
-            statusCode = res.statusCode;
-            result = res.body;
+                statusCode = res.statusCode;
+                result = res.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -49,7 +59,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
 
@@ -59,28 +69,38 @@ describe('integrations', () => {
       let statusCode: number;
       let result: ErrorResult;
 
-      jest.setTimeout(1000 * 30);
-
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const api = request(app);
+            server = app.listen(async () => {
+              try {
+                const api = request(app);
 
-            await Promise.all(
-              range(1, config.maxRateLimit.uploads).map(async () => {
-                await api.post('/files').attach('file', file);
-              })
-            );
+                await Promise.all(
+                  range(1, config.rateLimit.max.uploads).map(async () => {
+                    try {
+                      await api.post('/files').attach('file', file).expect(201);
+                    } catch (e3) {
+                      reject(e3);
+                    }
+                  })
+                );
 
-            const res = await api.post('/files').attach('file', file);
+                const res = await api.post('/files').attach('file', file);
 
-            statusCode = res.statusCode;
-            result = res.body;
+                statusCode = res.statusCode;
+                result = res.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -96,7 +116,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
 
@@ -107,17 +127,25 @@ describe('integrations', () => {
       let result: ErrorResult;
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const res = await request(app).post('/files');
+            server = app.listen(async () => {
+              try {
+                const res = await request(app).post('/files');
 
-            statusCode = res.statusCode;
-            result = res.body;
+                statusCode = res.statusCode;
+                result = res.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -131,7 +159,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
   });
@@ -143,19 +171,31 @@ describe('integrations', () => {
       let statusCode: number;
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((res, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const api = request(app);
+            server = app.listen(async () => {
+              try {
+                const api = request(app);
 
-            const res1 = await api.post('/files').attach('file', file);
-            const res2 = await api.delete(`/files/${res1.body.privateKey}`);
+                const res1 = await api
+                  .post('/files')
+                  .attach('file', file)
+                  .expect(201);
 
-            statusCode = res2.statusCode;
+                const res2 = await api.delete(`/files/${res1.body.privateKey}`);
 
-            done();
-          });
+                statusCode = res2.statusCode;
+
+                res();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -164,7 +204,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
 
@@ -175,17 +215,25 @@ describe('integrations', () => {
       let result: ErrorResult;
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const res = await request(app).delete('/files/i-dont-exist');
+            server = app.listen(async () => {
+              try {
+                const res = await request(app).delete('/files/i-dont-exist');
 
-            statusCode = res.statusCode;
-            result = res.body;
+                statusCode = res.statusCode;
+                result = res.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -201,7 +249,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
   });
@@ -215,22 +263,33 @@ describe('integrations', () => {
       let body: Buffer;
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const api = request(app);
+            server = app.listen(async () => {
+              try {
+                const api = request(app);
 
-            const res1 = await api.post('/files').attach('file', file);
+                const res1 = await api
+                  .post('/files')
+                  .attach('file', file)
+                  .expect(201);
 
-            const res2 = await api.get(`/files/${res1.body.publicKey}`);
+                const res2 = await api.get(`/files/${res1.body.publicKey}`);
 
-            statusCode = res2.statusCode;
-            contentType = res2.headers['content-type'];
-            body = res2.body;
+                statusCode = res2.statusCode;
+                contentType = res2.headers['content-type'];
+                body = res2.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -247,7 +306,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
 
@@ -257,30 +316,45 @@ describe('integrations', () => {
       let statusCode: number;
       let result: ErrorResult;
 
-      jest.setTimeout(1000 * 30);
-
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const api = request(app);
+            server = app.listen(async () => {
+              try {
+                const api = request(app);
 
-            const res1 = await api.post('/files').attach('file', file);
+                const res1 = await api
+                  .post('/files')
+                  .attach('file', file)
+                  .expect(201);
 
-            await Promise.all(
-              range(1, config.maxRateLimit.downloads).map(async () => {
-                await api.get(`/files/${res1.body.publicKey}`);
-              })
-            );
+                await Promise.all(
+                  range(1, config.rateLimit.max.downloads).map(async () => {
+                    try {
+                      await api
+                        .get(`/files/${res1.body.publicKey}`)
+                        .expect(200);
+                    } catch (e3) {
+                      reject(e3);
+                    }
+                  })
+                );
 
-            const res2 = await api.get(`/files/${res1.body.publicKey}`);
+                const res2 = await api.get(`/files/${res1.body.publicKey}`);
 
-            statusCode = res2.statusCode;
-            result = res2.body;
+                statusCode = res2.statusCode;
+                result = res2.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -296,7 +370,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
 
@@ -307,17 +381,25 @@ describe('integrations', () => {
       let result: ErrorResult;
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const res = await request(app).get('/files/i-dont-exist');
+            server = app.listen(async () => {
+              try {
+                const res = await request(app).get('/files/i-dont-exist');
 
-            statusCode = res.statusCode;
-            result = res.body;
+                statusCode = res.statusCode;
+                result = res.body;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -333,7 +415,7 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
   });
@@ -345,16 +427,24 @@ describe('integrations', () => {
       let statusCode: number;
 
       beforeAll(async () => {
-        return new Promise<void>((done) => {
-          const app = createApp();
+        return new Promise<void>((resolve, reject) => {
+          try {
+            const app = createApp();
 
-          server = app.listen(async () => {
-            const res = await request(app).get('/');
+            server = app.listen(async () => {
+              try {
+                const res = await request(app).get('/');
 
-            statusCode = res.statusCode;
+                statusCode = res.statusCode;
 
-            done();
-          });
+                resolve();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
 
@@ -363,42 +453,52 @@ describe('integrations', () => {
       });
 
       afterAll((done) => {
-        server.close(done);
+        server?.close(done);
       });
     });
   });
 
   describe('ALL OTHER STUFFS', () => {
-    let server: Server;
+    describe('success', () => {
+      let server: Server;
 
-    let statusCode: number;
-    let result: ErrorResult;
+      let statusCode: number;
+      let result: ErrorResult;
 
-    beforeAll(async () => {
-      return new Promise<void>((done) => {
-        const app = createApp();
+      beforeAll(async () => {
+        return new Promise<void>((res, reject) => {
+          try {
+            const app = createApp();
 
-        server = app.listen(async () => {
-          const response = await request(app).get('/foo-bar');
+            server = app.listen(async () => {
+              try {
+                const response = await request(app).get('/foo-bar');
 
-          statusCode = response.statusCode;
-          result = response.body;
+                statusCode = response.statusCode;
+                result = response.body;
 
-          done();
+                res();
+              } catch (e2) {
+                reject(e2);
+              }
+            });
+          } catch (e1) {
+            reject(e1);
+          }
         });
       });
-    });
 
-    it('responds with http status code 404', () => {
-      expect(statusCode).toEqual(404);
-    });
+      it('responds with http status code 404', () => {
+        expect(statusCode).toEqual(404);
+      });
 
-    it('returns error', () => {
-      expect(result.error).toBeDefined();
-    });
+      it('returns error', () => {
+        expect(result.error).toBeDefined();
+      });
 
-    afterAll((done) => {
-      server.close(done);
+      afterAll((done) => {
+        server?.close(done);
+      });
     });
   });
 });

@@ -12,7 +12,7 @@ describe('GcpFileStorage', () => {
   const Filename = 'my-file.png';
   const FilePath = `/temp/${Filename}`;
 
-  describe('#put', () => {
+  describe('put', () => {
     let mockedBucketUpload: jest.Mock;
     let path: string;
 
@@ -39,7 +39,7 @@ describe('GcpFileStorage', () => {
     });
   });
 
-  describe('#delete', () => {
+  describe('delete', () => {
     let mockedFileDelete: jest.Mock;
 
     beforeAll(async () => {
@@ -63,7 +63,7 @@ describe('GcpFileStorage', () => {
     });
   });
 
-  describe('#load', () => {
+  describe('load', () => {
     let mockedFileCreateReadStream: jest.Mock;
     let res: IPipeable;
 

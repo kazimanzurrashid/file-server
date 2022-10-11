@@ -15,7 +15,7 @@ describe('AwsFileStorage', () => {
   const Filename = 'my-file.png';
   const FilePath = `/temp/${Filename}`;
 
-  describe('#put', () => {
+  describe('put', () => {
     let mockedFileCreateReadStream: jest.Mock;
     let mockedS3Send: jest.Mock;
     let s3SendCommand;
@@ -55,7 +55,7 @@ describe('AwsFileStorage', () => {
     });
   });
 
-  describe('#delete', () => {
+  describe('delete', () => {
     let mockedS3Send: jest.Mock;
     let s3SendCommand;
 
@@ -82,7 +82,7 @@ describe('AwsFileStorage', () => {
     });
   });
 
-  describe('#load', () => {
+  describe('load', () => {
     let mockedS3Send: jest.Mock;
     let s3SendCommand;
     let res: IPipeable;

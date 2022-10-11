@@ -1,18 +1,24 @@
-import { singleton } from 'tsyringe';
+import { inject, injectable } from 'tsyringe';
 
-import clock from '../../lib/clock';
 import IRateLimit from './rate-limit';
+import createKeyPrefix from './create-key-prefix';
 
 export interface IStat {
   downloads: number;
   uploads: number;
 }
 
-@singleton()
+@injectable()
 export default class InMemoryRateLimit implements IRateLimit {
   private readonly records = new Map<string, IStat>();
 
-  constructor(private readonly max: { uploads: number; downloads: number }) {}
+  constructor(
+    @inject('rateLimitMax')
+    private readonly max: {
+      readonly uploads: number;
+      readonly downloads: number;
+    }
+  ) {}
 
   async canUpload(ipAddress: string): Promise<boolean> {
     const allowed = this.allowed(
@@ -51,29 +57,22 @@ export default class InMemoryRateLimit implements IRateLimit {
   }
 
   stat(ipAddress: string): IStat {
-    return this.localStat(InMemoryRateLimit.createKey(ipAddress));
-  }
+    const key = createKeyPrefix(ipAddress);
 
-  private static createKey(ipAddress: string): string {
-    const now = clock.now();
-    const today = `${now.getFullYear()}-${(now.getMonth() + 1)
-      .toString()
-      .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
-
-    return `${ipAddress}:${today}`;
+    return this.localStat(key);
   }
 
   private allowed(
     ipAddress: string,
     predicate: (stat: IStat) => boolean
   ): boolean {
-    const key = InMemoryRateLimit.createKey(ipAddress);
+    const key = createKeyPrefix(ipAddress);
 
     return predicate(this.localStat(key));
   }
 
   private record(ipAddress: string, action: (stat: IStat) => IStat): void {
-    const key = InMemoryRateLimit.createKey(ipAddress);
+    const key = createKeyPrefix(ipAddress);
 
     this.records.set(key, action(this.localStat(key)));
   }

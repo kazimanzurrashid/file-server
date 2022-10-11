@@ -5,7 +5,7 @@ import InMemoryRateLimit, { IStat } from './in-memory-rate-limit';
 describe('InMemoryRateLimit', () => {
   const IpAddress = '127.0.0.1';
 
-  describe('#canUpload', () => {
+  describe('canUpload', () => {
     describe('when upload counter not reached limit', () => {
       let allowed: boolean;
 
@@ -44,7 +44,7 @@ describe('InMemoryRateLimit', () => {
     });
   });
 
-  describe('#recordUpload', () => {
+  describe('recordUpload', () => {
     let oldCount: number;
     let newCount: number;
 
@@ -68,7 +68,7 @@ describe('InMemoryRateLimit', () => {
     });
   });
 
-  describe('#canDownload', () => {
+  describe('canDownload', () => {
     describe('when download counter not reached limit', () => {
       let allowed: boolean;
 
@@ -107,7 +107,7 @@ describe('InMemoryRateLimit', () => {
     });
   });
 
-  describe('#recordDownload', () => {
+  describe('recordDownload', () => {
     let oldCount: number;
     let newCount: number;
 

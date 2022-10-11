@@ -9,13 +9,17 @@ import parse from 'parse-duration';
 import config from './config';
 import key from './lib/key';
 
-import InMemoryRateLimit from './services/rate-limit/in-memory-rate-limit';
+import IFileRepository from './services/file-repositoy/file-repository';
+import IFileStorage from './services/file-storage/file-storage';
+
 import InMemoryFileRepository from './services/file-repositoy/in-memory-file-repository';
+import rateLimitProvider from './services/rate-limit/rate-limit-provider';
 import fileStorageProvider from './services/file-storage/file-storage-provider';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
 import openApiRouter from './routers/open-api-router';
+import IRateLimit from './services/rate-limit/rate-limit';
 
 export default function createApp(): Express {
   (() => {
@@ -42,34 +46,30 @@ export default function createApp(): Express {
       storage
     }).single('file');
 
-    container.register('multer', {
-      useValue: uploader
+    container.registerInstance('multer', uploader);
+
+    container.register<IRateLimit>('RateLimit', {
+      useFactory: rateLimitProvider
     });
 
-    container.register('RateLimit', {
-      useValue: new InMemoryRateLimit({
-        uploads: config.maxRateLimit.uploads,
-        downloads: config.maxRateLimit.downloads
-      })
+    container.register<IFileRepository>('FileRepository', {
+      useFactory: () => new InMemoryFileRepository()
     });
 
-    container.register('FileRepository', {
-      useValue: new InMemoryFileRepository()
+    container.register<IFileStorage>('FileStorage', {
+      useFactory: fileStorageProvider
     });
 
-    container.register('FileStorage', {
-      useValue: fileStorageProvider()
-    });
+    container.registerInstance(
+      'gcInactiveDuration',
+      parse(config.garbageCollection.inactiveDuration)
+    );
+    container.registerInstance(
+      'gcCronExpression',
+      config.garbageCollection.cronExpression
+    );
 
-    container.register('gcInactiveDuration', {
-      useValue: parse(config.garbageCollection.inactiveDuration)
-    });
-
-    container.register('gcCronExpression', {
-      useValue: config.garbageCollection.cronExpression
-    });
-
-    container.register('Logger', { useValue: Pino() });
+    container.registerInstance('Logger', Pino());
   })();
 
   return express()

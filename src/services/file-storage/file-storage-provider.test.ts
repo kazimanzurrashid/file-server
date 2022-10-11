@@ -16,27 +16,25 @@ describe('fileStorageProvider', () => {
     originalProvider = config.storageProvider;
   });
 
-  afterAll(() => {
-    config.storageProvider = originalProvider;
-  });
-
   describe('local', () => {
     let originalPath: string;
     let storage: IFileStorage;
 
     beforeAll(() => {
       originalPath = config.storageFolder;
-      config.storageFolder = '/storage';
-      config.storageProvider = 'local';
-      storage = fileStorageProvider();
-    });
 
-    afterAll(() => {
-      config.storageFolder = originalPath;
+      config.storageProvider = 'local';
+      config.storageFolder = '/storage';
+
+      storage = fileStorageProvider();
     });
 
     it('returns correct storage', () => {
       expect(storage).toBeInstanceOf(LocalFileStorage);
+    });
+
+    afterAll(() => {
+      config.storageFolder = originalPath;
     });
   });
 
@@ -87,5 +85,9 @@ describe('fileStorageProvider', () => {
     it('throws exception', () => {
       expect(() => fileStorageProvider()).toThrow();
     });
+  });
+
+  afterAll(() => {
+    config.storageProvider = originalProvider;
   });
 });

@@ -22,7 +22,7 @@ describe('InMemoryFileRepository', () => {
     };
   };
 
-  describe('#add', () => {
+  describe('add', () => {
     const records: IFileInfo[] = [];
 
     beforeAll(async () => {
@@ -49,7 +49,7 @@ describe('InMemoryFileRepository', () => {
     });
   });
 
-  describe('#delete', () => {
+  describe('delete', () => {
     describe('when called for existent file', () => {
       const records: IFileInfo[] = [];
       let ret: IFileInfo | undefined;
@@ -91,7 +91,7 @@ describe('InMemoryFileRepository', () => {
     });
   });
 
-  describe('#get', () => {
+  describe('get', () => {
     describe('when called for existent file', () => {
       let info: IFileInfo;
 
@@ -155,7 +155,7 @@ describe('InMemoryFileRepository', () => {
     });
   });
 
-  describe('#listInactiveSince', () => {
+  describe('listInactiveSince', () => {
     let matched: IFileInfo[];
 
     beforeAll(async () => {
@@ -174,7 +174,7 @@ describe('InMemoryFileRepository', () => {
       const since = clock.now();
       since.setDate(since.getDate() - 2);
 
-      matched = await repo.listInactiveSince(since, 20);
+      matched = await repo.listInactiveSince(since);
     });
 
     it('returns the matching files', () => {

@@ -10,7 +10,7 @@ import IFileStorage from '../services/file-storage/file-storage';
 describe('FilesController', () => {
   const IpAddress = '127.0.0.1';
 
-  describe('#create', () => {
+  describe('create', () => {
     describe('when no file is provided', () => {
       let mockedResponseStatus: jest.Mock;
       let response: { error?: string };
@@ -179,7 +179,7 @@ describe('FilesController', () => {
     });
   });
 
-  describe('#delete', () => {
+  describe('delete', () => {
     describe('when file does not exist', () => {
       let mockedResponseStatus: jest.Mock;
       let response: { error?: string };
@@ -279,7 +279,7 @@ describe('FilesController', () => {
     });
   });
 
-  describe('#get', () => {
+  describe('get', () => {
     describe('when file does not exist', () => {
       let mockedResponseStatus: jest.Mock;
       let response: { error?: string };

@@ -1,8 +1,4 @@
-import {
-  createReadStream,
-  mkdirSync,
-  statSync,
-} from 'fs';
+import { createReadStream, mkdirSync, statSync } from 'fs';
 
 import { copyFile, unlink } from 'fs/promises';
 
@@ -39,17 +35,11 @@ export default function fileStorageProvider(): IFileStorage {
 
   ensureDir(join(rootPath, config.tempFolder));
 
-  container.register('fsUnlink', {
-    useValue: unlink
-  });
+  container.registerInstance('fsUnlink', unlink);
 
-  container.register('fsCreateReadStream', {
-    useValue: createReadStream
-  });
+  container.registerInstance('fsCreateReadStream', createReadStream);
 
-  container.register('fsCopyFile', {
-    useValue: copyFile
-  });
+  container.registerInstance('fsCopyFile', copyFile);
 
   switch (config.storageProvider.toLowerCase()) {
     case 'local': {
@@ -62,7 +52,7 @@ export default function fileStorageProvider(): IFileStorage {
         ensureDir(storagePath);
       }
 
-      container.register('localStorageLocation', { useValue: storagePath });
+      container.registerInstance('localStorageLocation', storagePath);
 
       return container.resolve(LocalFileStorage);
     }
@@ -71,10 +61,8 @@ export default function fileStorageProvider(): IFileStorage {
       const client = new Storage({
         keyFilename: config.gcpKeyFileLocation
       });
-      container.register('storageClient', { useValue: client });
-      container.register('gcpBucketName', {
-        useValue: config.gcpBucket
-      });
+      container.registerInstance('storageClient', client);
+      container.registerInstance('gcpBucketName', config.gcpBucket);
 
       return container.resolve(GcpFileStorage);
     }
@@ -82,8 +70,8 @@ export default function fileStorageProvider(): IFileStorage {
     case 'amazon': {
       const client = new S3Client({ region: config.awsRegion });
 
-      container.register('s3Client', { useValue: client });
-      container.register('awsBucketName', { useValue: config.awsBucket });
+      container.registerInstance('s3Client', client);
+      container.registerInstance('awsBucketName', config.awsBucket);
 
       return container.resolve(AwsFileStorage);
     }
@@ -100,10 +88,8 @@ export default function fileStorageProvider(): IFileStorage {
         pipeline
       );
 
-      container.register('blobClient', { useValue: client });
-      container.register('azContainerName', {
-        useValue: config.azContainerName
-      });
+      container.registerInstance('blobClient', client);
+      container.registerInstance('azContainerName', config.azContainerName);
 
       return container.resolve(AzFileStorage);
     }

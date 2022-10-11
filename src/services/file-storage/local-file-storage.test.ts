@@ -10,7 +10,7 @@ describe('LocalFileStorage', () => {
   const Filename = 'my-file.png';
   const FilePath = `/temp/${Filename}`;
 
-  describe('#put', () => {
+  describe('put', () => {
     let mockedFileCopy: jest.Mock;
     let path: string;
 
@@ -36,7 +36,7 @@ describe('LocalFileStorage', () => {
     });
   });
 
-  describe('#delete', () => {
+  describe('delete', () => {
     let mockedDelete: jest.Mock;
 
     beforeAll(async () => {
@@ -57,7 +57,7 @@ describe('LocalFileStorage', () => {
     });
   });
 
-  describe('#load', () => {
+  describe('load', () => {
     let res: IPipeable;
 
     beforeAll(async () => {

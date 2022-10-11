@@ -31,8 +31,8 @@ export default class GarbageCollector {
       matched = await this.repository.listInactiveSince(timestamp);
 
       const tasks = matched.map(async (fi) => {
-        await this.storage.delete(fi.path);
         await this.repository.delete(fi.privateKey);
+        await this.storage.delete(fi.path);
       });
 
       await Promise.all(tasks);

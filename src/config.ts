@@ -1,3 +1,5 @@
+import * as Process from 'process';
+
 export default {
   port: process.env.PORT || '3002',
 
@@ -15,7 +17,14 @@ export default {
   db: {
     provider: process.env.DB_PROVIDER || 'in-memory', // supported values: in-memory/local, mongo/mongodb
     mongodb: {
-      url: process.env.MONGO_URI || process.env.MONGODB_URI || '<PUT_YOUR_MONGODB_URI>'
+      url:
+        process.env.MONGO_URI ||
+        process.env.MONGODB_URI ||
+        '<PUT_YOUR_MONGODB_URI>',
+      collection:
+        process.env.MONGO_COLLECTION ||
+        process.env.MONGODB_COLLECTION ||
+        'files'
     }
   },
 
@@ -41,7 +50,7 @@ export default {
         process.env.AWS_ACCESS_KEY_ID || '<PUT_YOUR_AWS_ACCESS_KEY_ID>',
       secretAccessKey:
         process.env.AWS_SECRET_ACCESS_KEY || '<PUT_AWS_SECRET_ACCESS_KEY>',
-      region: process.env.AWS_REGION || '<PUT-YOUR_AWS_REGION>',
+      region: process.env.AWS_REGION || '<PUT_YOUR_AWS_REGION>',
       bucket: process.env.AWS_BUCKET || '<PUT_YOUR_AWS_BUCKET_NAME>'
     },
 
@@ -58,6 +67,7 @@ export default {
   },
 
   garbageCollection: {
+    enabled: ['true', 'yes', 'y'].includes(Process.env.GC_ENABLED || 'true'),
     cronExpression: process.env.GC_INACTIVE_CRON || '0 1 * * *', // Run every night @ 1am
     inactiveDuration: process.env.GC_INACTIVE_DURATION || '14d'
   }

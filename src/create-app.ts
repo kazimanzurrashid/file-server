@@ -68,7 +68,19 @@ export default function createApp(): Express {
       config.garbageCollection.cronExpression
     );
 
-    container.registerInstance('Logger', Pino());
+    container.registerInstance(
+      'Logger',
+      Pino({
+        timestamp: Pino.stdTimeFunctions.isoTime,
+        formatters: {
+          level: (label) => {
+            return {
+              level: label
+            };
+          }
+        }
+      })
+    );
   })();
 
   return express()

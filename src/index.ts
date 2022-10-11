@@ -8,7 +8,10 @@ import config from './config';
 import GarbageCollector from './garbage-collector';
 
 createApp().listen(config.port, () => {
-  container.resolve(GarbageCollector).run();
+  if (config.garbageCollection.enabled) {
+    container.resolve(GarbageCollector).run();
+  }
+
   container
     .resolve<Logger>('Logger')
     // eslint-disable-next-line i18n-text/no-en

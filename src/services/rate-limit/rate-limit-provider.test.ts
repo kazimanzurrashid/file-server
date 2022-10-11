@@ -5,9 +5,9 @@ import { container } from 'tsyringe';
 
 import config from '../../config';
 import RateLimit from './rate-limit';
+import rateLimitProvider from './rate-limit-provider';
 import InMemoryRateLimit from './in-memory-rate-limit';
 import RedisRateLimit from './redis-rate-limit';
-import rateLimitProvider from './rate-limit-provider';
 
 describe('rateLimitProvider', () => {
   let originalProvider: string;

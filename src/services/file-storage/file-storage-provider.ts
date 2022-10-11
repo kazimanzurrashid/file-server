@@ -33,7 +33,9 @@ export default function fileStorageProvider(): IFileStorage {
 
   const rootPath = resolve();
 
-  ensureDir(join(rootPath, config.tempFolder));
+  if (!isAbsolute(config.storage.tempLocation)) {
+    ensureDir(join(rootPath, config.storage.tempLocation));
+  }
 
   container.registerInstance('fsUnlink', unlink);
 
@@ -41,14 +43,14 @@ export default function fileStorageProvider(): IFileStorage {
 
   container.registerInstance('fsCopyFile', copyFile);
 
-  switch (config.storageProvider.toLowerCase()) {
+  switch (config.storage.provider.toLowerCase()) {
     case 'local': {
       let storagePath: string;
 
-      if (isAbsolute(config.storageFolder)) {
-        storagePath = config.storageFolder;
+      if (isAbsolute(config.storage.local.location)) {
+        storagePath = config.storage.local.location;
       } else {
-        storagePath = join(rootPath, config.storageFolder);
+        storagePath = join(rootPath, config.storage.local.location);
         ensureDir(storagePath);
       }
 
@@ -59,19 +61,25 @@ export default function fileStorageProvider(): IFileStorage {
     case 'gcp':
     case 'google': {
       const client = new Storage({
-        keyFilename: config.gcpKeyFileLocation
+        keyFilename: config.storage.gcp.keyFileLocation
       });
       container.registerInstance('storageClient', client);
-      container.registerInstance('gcpBucketName', config.gcpBucket);
+      container.registerInstance('gcpBucketName', config.storage.gcp.bucket);
 
       return container.resolve(GcpFileStorage);
     }
     case 'aws':
     case 'amazon': {
-      const client = new S3Client({ region: config.awsRegion });
+      const client = new S3Client({
+        region: config.storage.aws.region,
+        credentials: {
+          accessKeyId: config.storage.aws.accessKeyId,
+          secretAccessKey: config.storage.aws.secretAccessKey
+        }
+      });
 
       container.registerInstance('s3Client', client);
-      container.registerInstance('awsBucketName', config.awsBucket);
+      container.registerInstance('awsBucketName', config.storage.aws.bucket);
 
       return container.resolve(AwsFileStorage);
     }
@@ -79,23 +87,26 @@ export default function fileStorageProvider(): IFileStorage {
     case 'azure':
     case 'microsoft': {
       const sharedKeyCredential = new StorageSharedKeyCredential(
-        config.azStorageAccountName,
-        config.azStorageAccountAccessKey
+        config.storage.az.storageAccountName,
+        config.storage.az.storageAccountAccessKey
       );
       const pipeline = newPipeline(sharedKeyCredential);
       const client = new BlobServiceClient(
-        `https://${config.azStorageAccountName}.blob.core.windows.net`,
+        `https://${config.storage.az.storageAccountName}.blob.core.windows.net`,
         pipeline
       );
 
       container.registerInstance('blobClient', client);
-      container.registerInstance('azContainerName', config.azContainerName);
+      container.registerInstance(
+        'azContainerName',
+        config.storage.az.storageContainerName
+      );
 
       return container.resolve(AzFileStorage);
     }
     default: {
       throw new Error(
-        `Unsupported file storage provider: "${config.storageProvider}"!`
+        `Unsupported file storage provider: "${config.storage.provider}"!`
       );
     }
   }

@@ -13,7 +13,7 @@ describe('fileStorageProvider', () => {
   let originalProvider: string;
 
   beforeAll(() => {
-    originalProvider = config.storageProvider;
+    originalProvider = config.storage.provider;
   });
 
   describe('local', () => {
@@ -21,10 +21,10 @@ describe('fileStorageProvider', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      originalPath = config.storageFolder;
+      originalPath = config.storage.local.location;
 
-      config.storageProvider = 'local';
-      config.storageFolder = '/storage';
+      config.storage.provider = 'local';
+      config.storage.local.location = '/storage';
 
       storage = fileStorageProvider();
     });
@@ -34,7 +34,7 @@ describe('fileStorageProvider', () => {
     });
 
     afterAll(() => {
-      config.storageFolder = originalPath;
+      config.storage.local.location = originalPath;
     });
   });
 
@@ -42,7 +42,7 @@ describe('fileStorageProvider', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      config.storageProvider = 'gcp';
+      config.storage.provider = 'gcp';
       storage = fileStorageProvider();
     });
 
@@ -55,7 +55,7 @@ describe('fileStorageProvider', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      config.storageProvider = 'aws';
+      config.storage.provider = 'aws';
       storage = fileStorageProvider();
     });
 
@@ -68,7 +68,7 @@ describe('fileStorageProvider', () => {
     let storage: IFileStorage;
 
     beforeAll(() => {
-      config.storageProvider = 'az';
+      config.storage.provider = 'az';
       storage = fileStorageProvider();
     });
 
@@ -79,7 +79,7 @@ describe('fileStorageProvider', () => {
 
   describe('unknown', () => {
     beforeAll(() => {
-      config.storageProvider = 'foo-bar';
+      config.storage.provider = 'foo-bar';
     });
 
     it('throws exception', () => {
@@ -88,6 +88,6 @@ describe('fileStorageProvider', () => {
   });
 
   afterAll(() => {
-    config.storageProvider = originalProvider;
+    config.storage.provider = originalProvider;
   });
 });

@@ -29,7 +29,7 @@ export default function createApp(): Express {
         __,
         cb: (err: Error | null, destination: string) => void
       ) => {
-        cb(null, `${config.tempFolder}/`);
+        cb(null, `${config.storage.tempLocation}/`);
       },
 
       filename: (

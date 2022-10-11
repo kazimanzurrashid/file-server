@@ -1,11 +1,11 @@
 import { injectable } from 'tsyringe';
 
 import clock from '../../lib/clock';
-import IFileRepository, { AddFileInfo, IFileInfo } from './file-repository';
+import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
 
 @injectable()
-export default class InMemoryFileRepository implements IFileRepository {
-  constructor(private readonly records: IFileInfo[] = []) {}
+export default class InMemoryFileRepository implements FileRepository {
+  constructor(private readonly records: FileInfo[] = []) {}
 
   async add(arg: AddFileInfo): Promise<void> {
     const info = {
@@ -18,7 +18,7 @@ export default class InMemoryFileRepository implements IFileRepository {
     return Promise.resolve();
   }
 
-  async delete(privateKey: string): Promise<IFileInfo | undefined> {
+  async delete(privateKey: string): Promise<FileInfo | undefined> {
     const index = this.records.findIndex((fi) => fi.privateKey === privateKey);
 
     if (index > -1) {
@@ -30,7 +30,7 @@ export default class InMemoryFileRepository implements IFileRepository {
     return Promise.resolve(undefined);
   }
 
-  async get(publicKey: string): Promise<IFileInfo | undefined> {
+  async get(publicKey: string): Promise<FileInfo | undefined> {
     const info = this.records.find((fi) => fi.publicKey === publicKey);
 
     if (info) {
@@ -40,7 +40,7 @@ export default class InMemoryFileRepository implements IFileRepository {
     return Promise.resolve(info);
   }
 
-  async listInactiveSince(timestamp: Date, max = 25): Promise<IFileInfo[]> {
+  async listInactiveSince(timestamp: Date, max = 25): Promise<FileInfo[]> {
     const filtered = this.records
       .filter((fi) => fi.lastActivity.getTime() <= timestamp.getTime())
       .slice(0, max);

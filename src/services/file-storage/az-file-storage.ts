@@ -8,10 +8,10 @@ import {
   ContainerClient
 } from '@azure/storage-blob';
 
-import IFileStorage, { IPipeable } from './file-storage';
+import FileStorage, { Pipeable } from './file-storage';
 
 @injectable()
-export default class AzFileStorage implements IFileStorage {
+export default class AzFileStorage implements FileStorage {
   private readonly container: ContainerClient;
 
   constructor(
@@ -39,7 +39,7 @@ export default class AzFileStorage implements IFileStorage {
     await file.delete();
   }
 
-  async load(path: string): Promise<IPipeable> {
+  async load(path: string): Promise<Pipeable> {
     const file = this.getFile(path);
 
     const { readableStreamBody } = await file.download();

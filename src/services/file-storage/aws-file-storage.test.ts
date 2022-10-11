@@ -7,7 +7,7 @@ import {
   S3Client
 } from '@aws-sdk/client-s3';
 
-import { IPipeable } from './file-storage';
+import { Pipeable } from './file-storage';
 import AwsFileStorage from './aws-file-storage';
 
 describe('AwsFileStorage', () => {
@@ -85,7 +85,7 @@ describe('AwsFileStorage', () => {
   describe('load', () => {
     let mockedS3Send: jest.Mock;
     let s3SendCommand;
-    let res: IPipeable;
+    let res: Pipeable;
 
     beforeAll(async () => {
       mockedS3Send = jest.fn(async () => Promise.resolve({ Body: {} }));

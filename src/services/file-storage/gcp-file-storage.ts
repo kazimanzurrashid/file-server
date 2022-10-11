@@ -3,10 +3,10 @@ import { basename } from 'path';
 import { inject, injectable } from 'tsyringe';
 import { Bucket, Storage } from '@google-cloud/storage';
 
-import IFileStorage, { IPipeable } from './file-storage';
+import FileStorage, { Pipeable } from './file-storage';
 
 @injectable()
-export default class GcpFileStorage implements IFileStorage {
+export default class GcpFileStorage implements FileStorage {
   private readonly bucket: Bucket;
 
   constructor(
@@ -32,7 +32,7 @@ export default class GcpFileStorage implements IFileStorage {
     await file.delete();
   }
 
-  async load(path: string): Promise<IPipeable> {
+  async load(path: string): Promise<Pipeable> {
     const file = this.bucket.file(path);
 
     const stream = file.createReadStream();

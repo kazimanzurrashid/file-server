@@ -4,7 +4,7 @@ import { RedisClientType } from '@redis/client';
 import { container } from 'tsyringe';
 
 import config from '../../config';
-import IRateLimit from './rate-limit';
+import RateLimit from './rate-limit';
 import InMemoryRateLimit from './in-memory-rate-limit';
 import RedisRateLimit from './redis-rate-limit';
 import rateLimitProvider from './rate-limit-provider';
@@ -17,7 +17,7 @@ describe('rateLimitProvider', () => {
   });
 
   describe('in-memory', () => {
-    let rateLimit: IRateLimit;
+    let rateLimit: RateLimit;
 
     beforeAll(() => {
       config.rateLimit.provider = 'in-memory';
@@ -33,7 +33,7 @@ describe('rateLimitProvider', () => {
   describe('redis', () => {
     let originalUrl: string;
 
-    let rateLimit: IRateLimit;
+    let rateLimit: RateLimit;
 
     beforeAll(() => {
       originalUrl = config.rateLimit.redis.url;

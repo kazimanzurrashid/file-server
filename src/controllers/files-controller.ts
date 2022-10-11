@@ -2,16 +2,16 @@ import { inject, injectable } from 'tsyringe';
 import type { Request, Response } from 'express';
 
 import key from '../lib/key';
-import IRateLimit from '../services/rate-limit/rate-limit';
-import IFileRepository from '../services/file-repositoy/file-repository';
-import IFileStorage from '../services/file-storage/file-storage';
+import RateLimit from '../services/rate-limit/rate-limit';
+import FileRepository from '../services/file-repositoy/file-repository';
+import FileStorage from '../services/file-storage/file-storage';
 
 @injectable()
 export default class FilesController {
   constructor(
-    @inject('RateLimit') private readonly rateLimit: IRateLimit,
-    @inject('FileRepository') private readonly repository: IFileRepository,
-    @inject('FileStorage') private readonly storage: IFileStorage,
+    @inject('RateLimit') private readonly rateLimit: RateLimit,
+    @inject('FileRepository') private readonly repository: FileRepository,
+    @inject('FileStorage') private readonly storage: FileStorage,
     @inject('fsUnlink')
     private readonly fileDelete: (path: string) => Promise<void>
   ) {}

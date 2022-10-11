@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import config from '../../config';
 
-import IFileStorage from './file-storage';
+import FileStorage from './file-storage';
 import fileStorageProvider from './file-storage-provider';
 import LocalFileStorage from './local-file-storage';
 import GcpFileStorage from './gcp-file-storage';
@@ -18,7 +18,7 @@ describe('fileStorageProvider', () => {
 
   describe('local', () => {
     let originalPath: string;
-    let storage: IFileStorage;
+    let storage: FileStorage;
 
     beforeAll(() => {
       originalPath = config.storage.local.location;
@@ -39,7 +39,7 @@ describe('fileStorageProvider', () => {
   });
 
   describe('gcp', () => {
-    let storage: IFileStorage;
+    let storage: FileStorage;
 
     beforeAll(() => {
       config.storage.provider = 'gcp';
@@ -52,7 +52,7 @@ describe('fileStorageProvider', () => {
   });
 
   describe('aws', () => {
-    let storage: IFileStorage;
+    let storage: FileStorage;
 
     beforeAll(() => {
       config.storage.provider = 'aws';
@@ -65,7 +65,7 @@ describe('fileStorageProvider', () => {
   });
 
   describe('az', () => {
-    let storage: IFileStorage;
+    let storage: FileStorage;
 
     beforeAll(() => {
       config.storage.provider = 'az';

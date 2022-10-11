@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import clock from '../../lib/clock';
-import { IFileInfo } from './file-repository';
+import { FileInfo } from './file-repository';
 import InMemoryFileRepository from './in-memory-file-repository';
 
 describe('InMemoryFileRepository', () => {
@@ -11,7 +11,7 @@ describe('InMemoryFileRepository', () => {
   const Path = '/my_photo.jpg';
   const Size = 100;
 
-  const createFileInfo = (): IFileInfo => {
+  const createFileInfo = (): FileInfo => {
     return {
       publicKey: PublicKey,
       privateKey: PrivateKey,
@@ -23,7 +23,7 @@ describe('InMemoryFileRepository', () => {
   };
 
   describe('add', () => {
-    const records: IFileInfo[] = [];
+    const records: FileInfo[] = [];
 
     beforeAll(async () => {
       const repo = new InMemoryFileRepository(records);
@@ -51,8 +51,8 @@ describe('InMemoryFileRepository', () => {
 
   describe('delete', () => {
     describe('when called for existent file', () => {
-      const records: IFileInfo[] = [];
-      let ret: IFileInfo | undefined;
+      const records: FileInfo[] = [];
+      let ret: FileInfo | undefined;
 
       beforeAll(async () => {
         records.push(createFileInfo());
@@ -71,8 +71,8 @@ describe('InMemoryFileRepository', () => {
     });
 
     describe('when called for non-existent file', () => {
-      const records: IFileInfo[] = [];
-      let ret: IFileInfo | undefined;
+      const records: FileInfo[] = [];
+      let ret: FileInfo | undefined;
 
       beforeAll(async () => {
         records.push(createFileInfo());
@@ -93,10 +93,10 @@ describe('InMemoryFileRepository', () => {
 
   describe('get', () => {
     describe('when called for existent file', () => {
-      let info: IFileInfo;
+      let info: FileInfo;
 
       beforeAll(async () => {
-        const records: IFileInfo[] = [createFileInfo()];
+        const records: FileInfo[] = [createFileInfo()];
 
         const repo = new InMemoryFileRepository(records);
 
@@ -114,10 +114,10 @@ describe('InMemoryFileRepository', () => {
     });
 
     describe('when called for non-existent file', () => {
-      let info: IFileInfo;
+      let info: FileInfo;
 
       beforeAll(async () => {
-        const records: IFileInfo[] = [createFileInfo()];
+        const records: FileInfo[] = [createFileInfo()];
 
         const repo = new InMemoryFileRepository(records);
 
@@ -134,7 +134,7 @@ describe('InMemoryFileRepository', () => {
       let newLastActivity: Date;
 
       beforeAll(async () => {
-        const records: IFileInfo[] = [createFileInfo()];
+        const records: FileInfo[] = [createFileInfo()];
 
         const repo = new InMemoryFileRepository(records);
 
@@ -156,10 +156,10 @@ describe('InMemoryFileRepository', () => {
   });
 
   describe('listInactiveSince', () => {
-    let matched: IFileInfo[];
+    let matched: FileInfo[];
 
     beforeAll(async () => {
-      const records: IFileInfo[] = [];
+      const records: FileInfo[] = [];
 
       for (let i = 0; i < 5; i++) {
         const file = createFileInfo();

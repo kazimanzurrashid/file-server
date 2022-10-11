@@ -10,10 +10,10 @@ import {
   S3Client
 } from '@aws-sdk/client-s3';
 
-import IFileStorage, { IPipeable } from './file-storage';
+import FileStorage, { Pipeable } from './file-storage';
 
 @injectable()
-export default class AwsFileStorage implements IFileStorage {
+export default class AwsFileStorage implements FileStorage {
   constructor(
     @inject('s3Client')
     private readonly client: S3Client,
@@ -46,7 +46,7 @@ export default class AwsFileStorage implements IFileStorage {
     await this.client.send(command);
   }
 
-  async load(path: string): Promise<IPipeable> {
+  async load(path: string): Promise<Pipeable> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,
       Key: path
@@ -54,6 +54,6 @@ export default class AwsFileStorage implements IFileStorage {
 
     const { Body } = await this.client.send(command);
 
-    return Body as IPipeable;
+    return Body as Pipeable;
   }
 }

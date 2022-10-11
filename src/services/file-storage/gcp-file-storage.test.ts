@@ -4,7 +4,7 @@ import { Stream } from 'stream';
 
 import { Storage } from '@google-cloud/storage';
 
-import { IPipeable } from './file-storage';
+import { Pipeable } from './file-storage';
 import GcpFileStorage from './gcp-file-storage';
 
 describe('GcpFileStorage', () => {
@@ -65,7 +65,7 @@ describe('GcpFileStorage', () => {
 
   describe('load', () => {
     let mockedFileCreateReadStream: jest.Mock;
-    let res: IPipeable;
+    let res: Pipeable;
 
     beforeAll(async () => {
       mockedFileCreateReadStream = jest.fn(async () =>

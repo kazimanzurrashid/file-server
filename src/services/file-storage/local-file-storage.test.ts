@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { ReadStream } from 'fs';
 
-import { IPipeable } from './file-storage';
+import { Pipeable } from './file-storage';
 import LocalFileStorage from './local-file-storage';
 
 describe('LocalFileStorage', () => {
@@ -58,7 +58,7 @@ describe('LocalFileStorage', () => {
   });
 
   describe('load', () => {
-    let res: IPipeable;
+    let res: Pipeable;
 
     beforeAll(async () => {
       const storage = new LocalFileStorage(

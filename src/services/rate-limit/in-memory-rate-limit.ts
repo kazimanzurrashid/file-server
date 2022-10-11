@@ -1,16 +1,16 @@
 import { inject, injectable } from 'tsyringe';
 
-import IRateLimit from './rate-limit';
+import RateLimit from './rate-limit';
 import createKeyPrefix from './create-key-prefix';
 
-export interface IStat {
+export interface Stat {
   downloads: number;
   uploads: number;
 }
 
 @injectable()
-export default class InMemoryRateLimit implements IRateLimit {
-  private readonly records = new Map<string, IStat>();
+export default class InMemoryRateLimit implements RateLimit {
+  private readonly records = new Map<string, Stat>();
 
   constructor(
     @inject('rateLimitMax')
@@ -56,7 +56,7 @@ export default class InMemoryRateLimit implements IRateLimit {
     return Promise.resolve();
   }
 
-  stat(ipAddress: string): IStat {
+  stat(ipAddress: string): Stat {
     const key = createKeyPrefix(ipAddress);
 
     return this.localStat(key);
@@ -64,20 +64,20 @@ export default class InMemoryRateLimit implements IRateLimit {
 
   private allowed(
     ipAddress: string,
-    predicate: (stat: IStat) => boolean
+    predicate: (stat: Stat) => boolean
   ): boolean {
     const key = createKeyPrefix(ipAddress);
 
     return predicate(this.localStat(key));
   }
 
-  private record(ipAddress: string, action: (stat: IStat) => IStat): void {
+  private record(ipAddress: string, action: (stat: Stat) => Stat): void {
     const key = createKeyPrefix(ipAddress);
 
     this.records.set(key, action(this.localStat(key)));
   }
 
-  private localStat(key: string): IStat {
+  private localStat(key: string): Stat {
     return this.records.get(key) || { uploads: 0, downloads: 0 };
   }
 }

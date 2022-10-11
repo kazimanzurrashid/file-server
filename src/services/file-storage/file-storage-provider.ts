@@ -16,13 +16,13 @@ import {
 
 import config from '../../config';
 
-import IFileStorage from './file-storage';
+import FileStorage from './file-storage';
 import LocalFileStorage from './local-file-storage';
 import GcpFileStorage from './gcp-file-storage';
 import AwsFileStorage from './aws-file-storage';
 import AzFileStorage from './az-file-storage';
 
-export default function fileStorageProvider(): IFileStorage {
+export default function fileStorageProvider(): FileStorage {
   const ensureDir = (path: string): void => {
     const stat = statSync(path, { throwIfNoEntry: false });
     if (stat?.isDirectory()) {

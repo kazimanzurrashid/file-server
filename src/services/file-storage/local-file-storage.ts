@@ -3,10 +3,10 @@ import { basename, join } from 'path';
 
 import { inject, injectable } from 'tsyringe';
 
-import IFileStorage, { IPipeable } from './file-storage';
+import FileStorage, { Pipeable } from './file-storage';
 
 @injectable()
-export default class LocalFileStorage implements IFileStorage {
+export default class LocalFileStorage implements FileStorage {
   constructor(
     @inject('localStorageLocation')
     private readonly storageLocation: string,
@@ -36,7 +36,7 @@ export default class LocalFileStorage implements IFileStorage {
     return this.fileDelete(fullPath);
   }
 
-  async load(path: string): Promise<IPipeable> {
+  async load(path: string): Promise<Pipeable> {
     const fullPath = join(this.storageLocation, path);
 
     const stream = this.fileCreateReadStream(fullPath);

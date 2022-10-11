@@ -2,16 +2,16 @@ import { inject, injectable } from 'tsyringe';
 import { schedule } from 'node-cron';
 
 import clock from './lib/clock';
-import IFileRepository, {
-  IFileInfo
+import FileRepository, {
+  FileInfo
 } from './services/file-repositoy/file-repository';
-import IFileStorage from './services/file-storage/file-storage';
+import FileStorage from './services/file-storage/file-storage';
 
 @injectable()
 export default class GarbageCollector {
   constructor(
-    @inject('FileRepository') private readonly repository: IFileRepository,
-    @inject('FileStorage') private readonly storage: IFileStorage,
+    @inject('FileRepository') private readonly repository: FileRepository,
+    @inject('FileStorage') private readonly storage: FileStorage,
     @inject('gcInactiveDuration') private readonly inactiveDuration: number,
     @inject('gcCronExpression') private readonly cronExpression: string
   ) {}
@@ -25,7 +25,7 @@ export default class GarbageCollector {
   private async cleanup(): Promise<void> {
     const timestamp = new Date(clock.now().getTime() - this.inactiveDuration);
 
-    let matched: IFileInfo[];
+    let matched: FileInfo[];
 
     do {
       matched = await this.repository.listInactiveSince(timestamp);

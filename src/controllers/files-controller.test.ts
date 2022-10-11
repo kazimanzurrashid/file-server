@@ -3,9 +3,9 @@ import 'reflect-metadata';
 import type { Request, Response } from 'express';
 
 import FilesController from './files-controller';
-import IFileRepository from '../services/file-repositoy/file-repository';
-import IRateLimit from '../services/rate-limit/rate-limit';
-import IFileStorage from '../services/file-storage/file-storage';
+import FileRepository from '../services/file-repositoy/file-repository';
+import RateLimit from '../services/rate-limit/rate-limit';
+import FileStorage from '../services/file-storage/file-storage';
 
 describe('FilesController', () => {
   const IpAddress = '127.0.0.1';
@@ -59,7 +59,7 @@ describe('FilesController', () => {
         mockedFileDelete = jest.fn(async () => Promise.resolve());
 
         const controller = new FilesController(
-          rateLimit as unknown as IRateLimit,
+          rateLimit as unknown as RateLimit,
           undefined,
           undefined,
           mockedFileDelete
@@ -125,9 +125,9 @@ describe('FilesController', () => {
         };
 
         const controller = new FilesController(
-          rateLimit as unknown as IRateLimit,
-          repository as unknown as IFileRepository,
-          storage as unknown as IFileStorage,
+          rateLimit as unknown as RateLimit,
+          repository as unknown as FileRepository,
+          storage as unknown as FileStorage,
           mockedFileDelete
         );
 
@@ -191,8 +191,8 @@ describe('FilesController', () => {
 
         const controller = new FilesController(
           undefined,
-          repository as unknown as IFileRepository,
-          {} as unknown as IFileStorage,
+          repository as unknown as FileRepository,
+          {} as unknown as FileStorage,
           undefined
         );
 
@@ -243,8 +243,8 @@ describe('FilesController', () => {
 
         const controller = new FilesController(
           undefined,
-          repository as unknown as IFileRepository,
-          storage as unknown as IFileStorage,
+          repository as unknown as FileRepository,
+          storage as unknown as FileStorage,
           undefined
         );
 
@@ -291,7 +291,7 @@ describe('FilesController', () => {
 
         const controller = new FilesController(
           undefined,
-          repository as unknown as IFileRepository,
+          repository as unknown as FileRepository,
           undefined,
           undefined
         );
@@ -339,8 +339,8 @@ describe('FilesController', () => {
         };
 
         const controller = new FilesController(
-          rateLimit as unknown as IRateLimit,
-          repository as unknown as IFileRepository,
+          rateLimit as unknown as RateLimit,
+          repository as unknown as FileRepository,
           undefined,
           undefined
         );
@@ -408,9 +408,9 @@ describe('FilesController', () => {
         };
 
         const controller = new FilesController(
-          rateLimit as unknown as IRateLimit,
-          repository as unknown as IFileRepository,
-          storage as unknown as IFileStorage,
+          rateLimit as unknown as RateLimit,
+          repository as unknown as FileRepository,
+          storage as unknown as FileStorage,
           undefined
         );
 

@@ -9,17 +9,16 @@ import parse from 'parse-duration';
 import config from './config';
 import key from './lib/key';
 
-import IFileRepository from './services/file-repositoy/file-repository';
-import IFileStorage from './services/file-storage/file-storage';
-
-import InMemoryFileRepository from './services/file-repositoy/in-memory-file-repository';
+import RateLimit from './services/rate-limit/rate-limit';
 import rateLimitProvider from './services/rate-limit/rate-limit-provider';
+import FileRepository from './services/file-repositoy/file-repository';
+import fileRepositoryProvider from './services/file-repositoy/file-repository-provider';
+import FileStorage from './services/file-storage/file-storage';
 import fileStorageProvider from './services/file-storage/file-storage-provider';
 
 import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
 import openApiRouter from './routers/open-api-router';
-import IRateLimit from './services/rate-limit/rate-limit';
 
 export default function createApp(): Express {
   (() => {
@@ -48,15 +47,15 @@ export default function createApp(): Express {
 
     container.registerInstance('multer', uploader);
 
-    container.register<IRateLimit>('RateLimit', {
+    container.register<RateLimit>('RateLimit', {
       useFactory: rateLimitProvider
     });
 
-    container.register<IFileRepository>('FileRepository', {
-      useFactory: () => new InMemoryFileRepository()
+    container.register<FileRepository>('FileRepository', {
+      useFactory: fileRepositoryProvider
     });
 
-    container.register<IFileStorage>('FileStorage', {
+    container.register<FileStorage>('FileStorage', {
       useFactory: fileStorageProvider
     });
 

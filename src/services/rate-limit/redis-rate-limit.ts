@@ -1,13 +1,13 @@
 import { inject, injectable } from 'tsyringe';
 import { RedisClientType } from '@redis/client';
 
-import IRateLimit from './rate-limit';
+import RateLimit from './rate-limit';
 import createKeyPrefix from './create-key-prefix';
 
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
 @injectable()
-export default class RedisRateLimit implements IRateLimit {
+export default class RedisRateLimit implements RateLimit {
   constructor(
     @inject('rateLimitMax')
     private readonly max: {

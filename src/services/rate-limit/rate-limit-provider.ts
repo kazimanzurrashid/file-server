@@ -3,11 +3,11 @@ import { createClient } from '@redis/client';
 import { Logger } from 'pino';
 
 import config from '../../config';
-import IRateLimit from './rate-limit';
+import RateLimit from './rate-limit';
 import InMemoryRateLimit from './in-memory-rate-limit';
 import RedisRateLimit from './redis-rate-limit';
 
-export default function rateLimitProvider(): IRateLimit {
+export default function rateLimitProvider(): RateLimit {
   container.registerInstance('rateLimitMax', {
     uploads: config.rateLimit.max.uploads,
     downloads: config.rateLimit.max.downloads

@@ -3,7 +3,7 @@ import { Stream } from 'stream';
 
 import { BlobServiceClient } from '@azure/storage-blob';
 
-import { IPipeable } from './file-storage';
+import { Pipeable } from './file-storage';
 import AzFileStorage from './az-file-storage';
 
 describe('AzFileStorage', () => {
@@ -74,7 +74,7 @@ describe('AzFileStorage', () => {
 
   describe('load', () => {
     let mockedClientFileDownload: jest.Mock;
-    let res: IPipeable;
+    let res: Pipeable;
 
     beforeAll(async () => {
       mockedClientFileDownload = jest.fn(async () =>

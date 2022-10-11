@@ -1,4 +1,4 @@
-export default interface IRateLimit {
+export default interface RateLimit {
   canUpload(ipAddress: string): Promise<boolean>;
   recordUpload(ipAddress: string): Promise<void>;
 

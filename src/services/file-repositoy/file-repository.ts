@@ -1,4 +1,4 @@
-export interface IFileInfo {
+export interface FileInfo {
   publicKey: string;
   privateKey: string;
   mimeType: string;
@@ -7,14 +7,14 @@ export interface IFileInfo {
   lastActivity: Date;
 }
 
-export type AddFileInfo = Omit<IFileInfo, 'lastActivity'>;
+export type AddFileInfo = Omit<FileInfo, 'lastActivity'>;
 
-export default interface IFileRepository {
+export default interface FileRepository {
   add(arg: AddFileInfo): Promise<void>;
 
-  delete(privateKey: string): Promise<IFileInfo | undefined>;
+  delete(privateKey: string): Promise<FileInfo | undefined>;
 
-  get(publicKey: string): Promise<IFileInfo | undefined>;
+  get(publicKey: string): Promise<FileInfo | undefined>;
 
-  listInactiveSince(timestamp: Date, max?: number): Promise<IFileInfo[]>;
+  listInactiveSince(timestamp: Date, max?: number): Promise<FileInfo[]>;
 }

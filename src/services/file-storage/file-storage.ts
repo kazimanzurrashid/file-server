@@ -1,12 +1,12 @@
-export interface IPipeable {
+export interface Pipeable {
   // eslint-disable-next-line no-undef
   pipe<T extends NodeJS.WritableStream>(destination: T): void;
 }
 
-export default interface IFileStorage {
+export default interface FileStorage {
   put(sourcePath: string): Promise<string>;
 
   delete(path: string): Promise<void>;
 
-  load(path: string): Promise<IPipeable>;
+  load(path: string): Promise<Pipeable>;
 }

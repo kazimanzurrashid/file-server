@@ -1,6 +1,24 @@
 export default {
   port: process.env.PORT || '3002',
 
+  rateLimit: {
+    provider: process.env.RATE_LIMIT_PROVIDER || 'in-memory', // supported values: in-memory/local, redis
+    max: {
+      uploads: Number(process.env.MAX_DAILY_UPLOADS || '5'),
+      downloads: Number(process.env.MAX_DAILY_DOWNLOADS || '25')
+    },
+    redis: {
+      url: process.env.REDIS_URL || '<PUT_YOUR_REDIS_URL>'
+    }
+  },
+
+  db: {
+    provider: process.env.DB_PROVIDER || 'in-memory', // supported values: in-memory/local, mongo/mongodb
+    mongodb: {
+      url: process.env.MONGO_URI || process.env.MONGODB_URI || '<PUT_YOUR_MONGODB_URI>'
+    }
+  },
+
   storage: {
     provider: process.env.STORAGE_PROVIDER || 'local', // supported values: local, gcp/google, aws/amazon, az/azure/microsoft
 
@@ -36,17 +54,6 @@ export default {
         '<PUT_YOUR_AZ_STORAGE_ACCOUNT_ACCESS_KEY>',
       storageContainerName:
         process.env.AZ_CONTAINER || '<PUT_YOUR_AZ_STORAGE_CONTAINER>'
-    }
-  },
-
-  rateLimit: {
-    provider: process.env.RATE_LIMIT_PROVIDER || 'in-memory', // supported values: in-memory/local, redis
-    max: {
-      uploads: Number(process.env.MAX_DAILY_UPLOADS || '5'),
-      downloads: Number(process.env.MAX_DAILY_DOWNLOADS || '25')
-    },
-    redis: {
-      url: process.env.REDIS_URI || '<PUT_YOUR_REDIS_URL>'
     }
   },
 

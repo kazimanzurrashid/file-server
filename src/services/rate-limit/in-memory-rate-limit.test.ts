@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import InMemoryRateLimit, { IStat } from './in-memory-rate-limit';
+import InMemoryRateLimit, { Stat } from './in-memory-rate-limit';
 
 describe('InMemoryRateLimit', () => {
   const IpAddress = '127.0.0.1';
@@ -53,7 +53,7 @@ describe('InMemoryRateLimit', () => {
         uploads: 5,
         downloads: 15
       });
-      let stat: IStat;
+      let stat: Stat;
 
       stat = rateLimit.stat(IpAddress);
       oldCount = stat.uploads;
@@ -117,7 +117,7 @@ describe('InMemoryRateLimit', () => {
         downloads: 15
       });
 
-      let stat: IStat;
+      let stat: Stat;
 
       stat = rateLimit.stat(IpAddress);
       oldCount = stat.downloads;

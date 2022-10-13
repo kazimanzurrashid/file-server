@@ -13,7 +13,9 @@ type ErrorResult = {
   error: string;
 };
 
-async function runApp(action: (newApp: Express) => Promise<void>): Promise<void> {
+async function runApp(
+  action: (newApp: Express) => Promise<void>
+): Promise<void> {
   return new Promise<void>((resolve, reject) => {
     try {
       const app = createApp();
@@ -54,9 +56,7 @@ describe('integrations', () => {
 
       beforeAll(async () => {
         await runApp(async (app) => {
-          const res = await request(app)
-            .post('/files')
-            .attach('file', file);
+          const res = await request(app).post('/files').attach('file', file);
 
           statusCode = res.statusCode;
           result = res.body;
@@ -231,9 +231,7 @@ describe('integrations', () => {
 
           await Promise.all(
             range(1, config.rateLimit.max.downloads).map(async () => {
-              await api
-                .get(`/files/${res1.body.publicKey}`)
-                .expect(200);
+              await api.get(`/files/${res1.body.publicKey}`).expect(200);
             })
           );
 

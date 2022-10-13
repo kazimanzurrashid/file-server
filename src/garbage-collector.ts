@@ -1,4 +1,4 @@
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import { schedule } from 'node-cron';
 
 import clock from './lib/clock';
@@ -7,7 +7,7 @@ import FileRepository, {
 } from './services/file-repositoy/file-repository';
 import FileStorage from './services/file-storage/file-storage';
 
-@injectable()
+@singleton()
 export default class GarbageCollector {
   constructor(
     @inject('FileRepository') private readonly repository: FileRepository,

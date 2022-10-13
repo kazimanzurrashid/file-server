@@ -20,7 +20,7 @@ export default function rateLimitProvider(): RateLimit {
     }
     case 'redis': {
       const client = createClient({
-        url: config.rateLimit.redis.url,
+        url: config.rateLimit.redis.uri,
         socket: {
           reconnectStrategy(retries: number): number | Error {
             if (retries > 3) {

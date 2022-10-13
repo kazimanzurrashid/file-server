@@ -16,7 +16,7 @@ export default function fileRepositoryProvider(): FileRepository {
     }
     case 'mongo':
     case 'mongodb': {
-      const client = new MongoClient(config.db.mongodb.url);
+      const client = new MongoClient(config.db.mongodb.uri);
       const db = client.db();
 
       const collection = db.collection<FileInfo>(config.db.mongodb.collection);

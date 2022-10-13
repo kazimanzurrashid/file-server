@@ -36,10 +36,10 @@ describe('rateLimitProvider', () => {
     let rateLimit: RateLimit;
 
     beforeAll(() => {
-      originalUrl = config.rateLimit.redis.url;
+      originalUrl = config.rateLimit.redis.uri;
 
       config.rateLimit.provider = 'redis';
-      config.rateLimit.redis.url = 'redis://localhost:6379';
+      config.rateLimit.redis.uri = 'redis://localhost:6379';
 
       rateLimit = rateLimitProvider();
     });
@@ -54,7 +54,7 @@ describe('rateLimitProvider', () => {
         await redis.disconnect();
       }
 
-      config.rateLimit.redis.url = originalUrl;
+      config.rateLimit.redis.uri = originalUrl;
     });
   });
 

@@ -19,7 +19,7 @@ export default class GarbageCollector {
   run(): void {
     schedule(this.cronExpression, async () => {
       await this.cleanup();
-    });
+    }).start();
   }
 
   private async cleanup(): Promise<void> {

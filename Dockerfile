@@ -10,6 +10,9 @@ FROM node:16.17.1-alpine3.16
 USER node
 WORKDIR /usr/app
 COPY --chown=node:node --from=builder /usr/app/dist ./
-ENV NODE_ENV="production"
-EXPOSE 3002
+
+ENV NODE_ENV="production" \
+    PORT="3002"
+
+EXPOSE $PORT
 CMD ["node", "index.js"]

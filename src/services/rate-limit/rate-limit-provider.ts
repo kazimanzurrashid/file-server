@@ -1,6 +1,7 @@
 import { container } from 'tsyringe';
 import { createClient } from '@redis/client';
 import { Logger } from 'pino';
+import type { RedisClientOptions } from '@redis/client/dist/lib/client';
 
 import config from '../../config';
 import RateLimit from './rate-limit';
@@ -19,18 +20,21 @@ export default function rateLimitProvider(): RateLimit {
       return container.resolve(InMemoryRateLimit);
     }
     case 'redis': {
-      const client = createClient({
-        url: config.rateLimit.redis.uri,
-        socket: {
-          reconnectStrategy(retries: number): number | Error {
-            if (retries > 3) {
-              return new Error('Already retried 3 times');
-            }
+      const opt: RedisClientOptions = {
+        url: config.rateLimit.redis.uri
+      };
 
-            return Math.min(retries * 500, 500);
-          }
+      if (process.env.NODE_ENV == 'test') {
+        if (!opt.socket) {
+          opt.socket = {}
         }
-      });
+
+        opt.socket.reconnectStrategy = (_): Error => {
+          return new Error('Failed to reconnect!');
+        }
+      }
+
+      const client = createClient(opt);
 
       client.on('error', (error) => {
         if (container.isRegistered<Logger>('Logger')) {

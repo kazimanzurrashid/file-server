@@ -6,7 +6,7 @@ services:
     command: npm run start
     environment:
       RATE_LIMIT_PROVIDER: redis
-      REDIS_URL: redis://redis:${REDIS_PORT}
+      REDIS_URI: redis://redis:${REDIS_PORT}
       DB_PROVIDER: mongodb
       MONGODB_URI: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}/${MONGODB_DATABASE}
       NODE_ENV: development
@@ -22,7 +22,6 @@ services:
         condition: service_healthy
   redis:
     image: redis:7.0.5-alpine3.16
-    command: redis-server --save 60 1 --loglevel warning
     ports:
       - "${REDIS_PORT}"
     volumes:

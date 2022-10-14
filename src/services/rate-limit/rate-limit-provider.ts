@@ -24,14 +24,14 @@ export default function rateLimitProvider(): RateLimit {
         url: config.rateLimit.redis.uri
       };
 
-      if (process.env.NODE_ENV == 'test') {
+      if (process.env.NODE_ENV === 'test') {
         if (!opt.socket) {
-          opt.socket = {}
+          opt.socket = {};
         }
 
-        opt.socket.reconnectStrategy = (_): Error => {
+        opt.socket.reconnectStrategy = (): Error => {
           return new Error('Failed to reconnect!');
-        }
+        };
       }
 
       const client = createClient(opt);

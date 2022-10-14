@@ -9,10 +9,12 @@
     "url": "https://github.com/kazimanzurrashid/file-server"
   },
   "scripts": {
+    "prepare": "husky install",
     "start": "nodemon src/index.ts",
     "compile": "tsc --noEmit",
     "format": "prettier --write ./**/*.ts",
     "lint": "eslint ./ --fix",
+    "pre-commit": "lint-staged",
     "test": "cross-env NODE_ENV=test jest",
     "coverage": "cross-env NODE_ENV=test jest --ci --coverage",
     "build": "rimraf build && tsc",

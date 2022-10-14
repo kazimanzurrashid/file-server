@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile.dev
     command: npm run start
     environment:
+      MAX_DAILY_UPLOADS: 5000
+      MAX_DAILY_DOWNLOADS: 500000
       RATE_LIMIT_PROVIDER: redis
       REDIS_URI: redis://redis:${REDIS_PORT}
       DB_PROVIDER: mongodb

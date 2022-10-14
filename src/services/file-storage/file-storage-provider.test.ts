@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+import { container } from 'tsyringe';
+
 import config from '../../config';
 
 import FileStorage from './file-storage';
@@ -26,7 +28,7 @@ describe('fileStorageProvider', () => {
       config.storage.provider = 'local';
       config.storage.local.location = '/storage';
 
-      storage = fileStorageProvider();
+      storage = fileStorageProvider(container);
     });
 
     it('returns correct storage', () => {
@@ -43,7 +45,7 @@ describe('fileStorageProvider', () => {
 
     beforeAll(() => {
       config.storage.provider = 'gcp';
-      storage = fileStorageProvider();
+      storage = fileStorageProvider(container);
     });
 
     it('returns correct storage', () => {
@@ -56,7 +58,7 @@ describe('fileStorageProvider', () => {
 
     beforeAll(() => {
       config.storage.provider = 'aws';
-      storage = fileStorageProvider();
+      storage = fileStorageProvider(container);
     });
 
     it('returns correct storage', () => {
@@ -69,7 +71,7 @@ describe('fileStorageProvider', () => {
 
     beforeAll(() => {
       config.storage.provider = 'az';
-      storage = fileStorageProvider();
+      storage = fileStorageProvider(container);
     });
 
     it('returns correct storage', () => {
@@ -83,7 +85,7 @@ describe('fileStorageProvider', () => {
     });
 
     it('throws exception', () => {
-      expect(() => fileStorageProvider()).toThrow();
+      expect(() => fileStorageProvider(container)).toThrow();
     });
   });
 

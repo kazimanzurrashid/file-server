@@ -1,10 +1,12 @@
 import 'reflect-metadata';
 
-import { RedisClientType } from '@redis/client';
 import { container } from 'tsyringe';
 
+import type { Logger } from 'pino';
+import type { RedisClientOptions, RedisClientType } from '@redis/client';
+
 import config from '../../config';
-import RateLimit from './rate-limit';
+import type RateLimit from './rate-limit';
 import rateLimitProvider from './rate-limit-provider';
 import InMemoryRateLimit from './in-memory-rate-limit';
 import RedisRateLimit from './redis-rate-limit';
@@ -22,7 +24,7 @@ describe('rateLimitProvider', () => {
     beforeAll(() => {
       config.rateLimit.provider = 'in-memory';
 
-      rateLimit = rateLimitProvider();
+      rateLimit = rateLimitProvider(container);
     });
 
     it('returns correct limit', () => {
@@ -31,30 +33,89 @@ describe('rateLimitProvider', () => {
   });
 
   describe('redis', () => {
-    let originalUrl: string;
-
-    let rateLimit: RateLimit;
+    let originalUri: string;
 
     beforeAll(() => {
-      originalUrl = config.rateLimit.redis.uri;
+      originalUri = config.rateLimit.redis.uri;
 
       config.rateLimit.provider = 'redis';
       config.rateLimit.redis.uri = 'redis://localhost:6379';
-
-      rateLimit = rateLimitProvider();
     });
 
-    it('returns correct limit', () => {
-      expect(rateLimit).toBeInstanceOf(RedisRateLimit);
+    describe('success', () => {
+      let mockedLoggerInfo: jest.Mock;
+
+      let rateLimit: RateLimit;
+
+      beforeAll(() => {
+        mockedLoggerInfo = jest.fn();
+
+        container.registerInstance<Logger>('Logger', {
+          info: mockedLoggerInfo
+        } as unknown as Logger);
+
+        const mockedConnect = jest.fn(async () => Promise.resolve());
+
+        container.registerInstance<(_: RedisClientOptions) => RedisClientType>(
+          'redisFactory',
+          () => {
+            return {
+              connect: mockedConnect
+            } as unknown as RedisClientType;
+          }
+        );
+
+        rateLimit = rateLimitProvider(container);
+      });
+
+      it('returns correct limit', () => {
+        expect(rateLimit).toBeInstanceOf(RedisRateLimit);
+      });
+
+      it('logs when successfully connected', () => {
+        expect(mockedLoggerInfo).toHaveBeenCalled();
+      });
+    });
+
+    describe('failure', () => {
+      let mockedLoggerError: jest.Mock;
+
+      let rateLimit: RateLimit;
+
+      beforeAll(() => {
+        mockedLoggerError = jest.fn();
+
+        container.registerInstance<Logger>('Logger', {
+          error: mockedLoggerError
+        } as unknown as Logger);
+
+        const mockedConnect = jest.fn(async () =>
+          Promise.reject(new Error('Failed to connect'))
+        );
+
+        container.registerInstance<(_: RedisClientOptions) => RedisClientType>(
+          'redisFactory',
+          () => {
+            return {
+              connect: mockedConnect
+            } as unknown as RedisClientType;
+          }
+        );
+
+        rateLimit = rateLimitProvider(container);
+      });
+
+      it('returns correct limit', () => {
+        expect(rateLimit).toBeInstanceOf(RedisRateLimit);
+      });
+
+      it('logs when failed to connected', () => {
+        expect(mockedLoggerError).toHaveBeenCalled();
+      });
     });
 
     afterAll(async () => {
-      const redis = container.resolve<RedisClientType>('redisClient');
-      if (redis.isReady) {
-        await redis.disconnect();
-      }
-
-      config.rateLimit.redis.uri = originalUrl;
+      config.rateLimit.redis.uri = originalUri;
     });
   });
 
@@ -64,7 +125,7 @@ describe('rateLimitProvider', () => {
     });
 
     it('throws exception', () => {
-      expect(() => rateLimitProvider()).toThrow();
+      expect(() => rateLimitProvider(container)).toThrow();
     });
   });
 

@@ -7,7 +7,7 @@ import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
 @injectable()
 export default class MongoDBFileRepository implements FileRepository {
   constructor(
-    @inject('mongoFiles')
+    @inject('mongoFilesCollection')
     private readonly collection: Collection<FileInfo>
   ) {}
 

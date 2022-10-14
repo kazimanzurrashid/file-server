@@ -1,6 +1,6 @@
-import { container } from 'tsyringe';
-import { MongoClient } from 'mongodb';
-import { Logger } from 'pino';
+import type { DependencyContainer } from 'tsyringe';
+import type { Collection, MongoClient } from 'mongodb';
+import type { Logger } from 'pino';
 
 import config from '../../config';
 
@@ -8,18 +8,29 @@ import FileRepository, { FileInfo } from './file-repository';
 import InMemoryFileRepository from './in-memory-file-repository';
 import MongoDBFileRepository from './mongodb-file-repository';
 
-export default function fileRepositoryProvider(): FileRepository {
-  switch (config.db.provider.toLowerCase()) {
-    case 'in-memory':
-    case 'local': {
+export default function fileRepositoryProvider(
+  container: DependencyContainer
+): FileRepository {
+  switch (config.db.provider) {
+    case 'in-memory': {
       return new InMemoryFileRepository();
     }
     case 'mongo':
     case 'mongodb': {
-      const client = new MongoClient(config.db.mongodb.uri);
-      const db = client.db();
+      const client = container.resolve<(_: string) => MongoClient>(
+        'mongoFactory'
+      )(config.db.mongodb.uri);
 
-      const collection = db.collection<FileInfo>(config.db.mongodb.collection);
+      container.registerInstance<MongoClient>('mongoClient', client);
+
+      const collection = client
+        .db()
+        .collection<FileInfo>(config.db.mongodb.collection);
+
+      container.registerInstance<Collection<FileInfo>>(
+        'mongoFilesCollection',
+        collection
+      );
 
       const ensureIndex = async (
         name: string,
@@ -29,28 +40,18 @@ export default function fileRepositoryProvider(): FileRepository {
       ): Promise<void> => {
         const exists = await collection.indexExists(name);
 
-        if (exists) {
-          return;
+        if (!exists) {
+          await collection.createIndex(
+            {
+              [attr]: ascending ? 1 : -1
+            },
+            {
+              name,
+              unique
+            }
+          );
         }
-
-        await collection.createIndex(
-          {
-            [attr]: ascending ? 1 : -1
-          },
-          {
-            name,
-            unique
-          }
-        );
       };
-
-      client.on('error', (error) => {
-        if (container.isRegistered<Logger>('Logger')) {
-          container
-            .resolve<Logger>('Logger')
-            .error(error, 'mongodb client error');
-        }
-      });
 
       // eslint-disable-next-line github/no-then
       client.connect().then(
@@ -61,11 +62,7 @@ export default function fileRepositoryProvider(): FileRepository {
               .info('mongodb client connected');
           }
 
-          try {
-            await db.createCollection(config.db.mongodb.collection);
-          } catch (e) {
-            // do nothing
-          }
+          await client.db().createCollection(config.db.mongodb.collection);
 
           await Promise.all([
             ensureIndex('ix_privateKey', 'privateKey', true, true),
@@ -81,8 +78,6 @@ export default function fileRepositoryProvider(): FileRepository {
           }
         }
       );
-
-      container.registerInstance('mongoFiles', collection);
 
       return container.resolve(MongoDBFileRepository);
     }

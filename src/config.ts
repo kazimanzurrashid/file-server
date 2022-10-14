@@ -21,7 +21,7 @@ export default {
   port: setDefault('3002', 'PORT', 'FILE_SERVER_PORT'),
 
   rateLimit: {
-    provider: setDefault('in-memory', 'RATE_LIMIT_PROVIDER'), // supported values: in-memory/local, redis
+    provider: setDefault('in-memory', 'RATE_LIMIT_PROVIDER'), // supported values: in-memory, redis
 
     max: {
       uploads: Number(setDefault('5', 'MAX_DAILY_UPLOADS')),
@@ -34,7 +34,7 @@ export default {
   },
 
   db: {
-    provider: setDefault('in-memory', 'DB_PROVIDER'), // supported values: in-memory/local, mongo/mongodb
+    provider: setDefault('in-memory', 'DB_PROVIDER'), // supported values: in-memory, mongo/mongodb
 
     mongodb: {
       uri: setDefault(
@@ -108,7 +108,7 @@ export default {
   },
 
   validate(): void {
-    const supportedRateLimitProviders = 'redis,in-memory,local'.split(',');
+    const supportedRateLimitProviders = 'redis,in-memory'.split(',');
 
     if (!supportedRateLimitProviders.includes(this.rateLimit.provider)) {
       throw new Error(
@@ -138,7 +138,7 @@ export default {
 
     const mongoDB = ['mongo', 'mongodb'];
 
-    const supportedDBProviders = [...mongoDB, 'in-memory', 'local'];
+    const supportedDBProviders = [...mongoDB, 'in-memory'];
 
     if (!supportedDBProviders.includes(this.db.provider)) {
       throw new Error(

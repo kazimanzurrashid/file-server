@@ -4,7 +4,7 @@ import { copyFile, unlink } from 'fs/promises';
 
 import { isAbsolute, join, resolve } from 'path';
 
-import { container } from 'tsyringe';
+import type { DependencyContainer } from 'tsyringe';
 
 import { Storage } from '@google-cloud/storage';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -16,13 +16,15 @@ import {
 
 import config from '../../config';
 
-import FileStorage from './file-storage';
+import type FileStorage from './file-storage';
 import LocalFileStorage from './local-file-storage';
 import GcpFileStorage from './gcp-file-storage';
 import AwsFileStorage from './aws-file-storage';
 import AzFileStorage from './az-file-storage';
 
-export default function fileStorageProvider(): FileStorage {
+export default function fileStorageProvider(
+  container: DependencyContainer
+): FileStorage {
   const ensureDir = (path: string): void => {
     const stat = statSync(path, { throwIfNoEntry: false });
     if (stat?.isDirectory()) {
@@ -43,7 +45,7 @@ export default function fileStorageProvider(): FileStorage {
 
   container.registerInstance('fsCopyFile', copyFile);
 
-  switch (config.storage.provider.toLowerCase()) {
+  switch (config.storage.provider) {
     case 'local': {
       let storagePath: string;
 

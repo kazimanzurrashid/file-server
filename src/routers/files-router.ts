@@ -1,5 +1,4 @@
-import type { Request, Response, RequestHandler, Router } from 'express';
-import express from 'express';
+import express, { Request, Response, RequestHandler, Router } from 'express';
 
 import FilesController from '../controllers/files-controller';
 

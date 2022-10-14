@@ -1,8 +1,7 @@
 import { readFileSync } from 'fs';
 import { join, resolve } from 'path';
 
-import type { Router } from 'express';
-import express from 'express';
+import express, { Router } from 'express';
 
 import type { JsonObject } from 'swagger-ui-express';
 import { serve, setup } from 'swagger-ui-express';

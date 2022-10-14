@@ -3,17 +3,23 @@ import { extname } from 'path';
 import express, { Express, Response } from 'express';
 import multer from 'multer';
 import { container } from 'tsyringe';
-import Pino, { Logger } from 'pino';
 import parse from 'parse-duration';
+import Pino, { Logger } from 'pino';
+import { MongoClient } from 'mongodb';
+import {
+  createClient,
+  RedisClientOptions,
+  RedisClientType
+} from '@redis/client';
 
 import config from './config';
 import key from './lib/key';
 
-import RateLimit from './services/rate-limit/rate-limit';
+import type RateLimit from './services/rate-limit/rate-limit';
 import rateLimitProvider from './services/rate-limit/rate-limit-provider';
-import FileRepository from './services/file-repositoy/file-repository';
+import type FileRepository from './services/file-repositoy/file-repository';
 import fileRepositoryProvider from './services/file-repositoy/file-repository-provider';
-import FileStorage from './services/file-storage/file-storage';
+import type FileStorage from './services/file-storage/file-storage';
 import fileStorageProvider from './services/file-storage/file-storage-provider';
 
 import FilesController from './controllers/files-controller';
@@ -68,7 +74,7 @@ export default function createApp(): Express {
       config.garbageCollection.cronExpression
     );
 
-    container.registerInstance(
+    container.registerInstance<Logger>(
       'Logger',
       Pino({
         timestamp: Pino.stdTimeFunctions.isoTime,
@@ -80,6 +86,20 @@ export default function createApp(): Express {
           }
         }
       })
+    );
+
+    container.registerInstance<(_: string) => MongoClient>(
+      'mongoFactory',
+      (uri: string): MongoClient => {
+        return new MongoClient(uri);
+      }
+    );
+
+    container.registerInstance<(_: RedisClientOptions) => RedisClientType>(
+      'redisFactory',
+      (opt: RedisClientOptions): RedisClientType => {
+        return createClient(opt) as RedisClientType;
+      }
     );
   })();
 

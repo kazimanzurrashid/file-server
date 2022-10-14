@@ -2,9 +2,9 @@ import { inject, injectable } from 'tsyringe';
 import type { Request, Response } from 'express';
 
 import key from '../lib/key';
-import RateLimit from '../services/rate-limit/rate-limit';
-import FileRepository from '../services/file-repositoy/file-repository';
-import FileStorage from '../services/file-storage/file-storage';
+import type RateLimit from '../services/rate-limit/rate-limit';
+import type FileRepository from '../services/file-repositoy/file-repository';
+import type FileStorage from '../services/file-storage/file-storage';
 
 @injectable()
 export default class FilesController {

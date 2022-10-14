@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { container } from 'tsyringe';
-import { Logger } from 'pino';
+import type { Logger } from 'pino';
 
 import createApp from './create-app';
 import config from './config';

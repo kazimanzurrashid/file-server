@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { join, resolve as pathResolve } from 'path';
 
-import { Express } from 'express';
+import type { Express } from 'express';
 
 import request from 'supertest';
 

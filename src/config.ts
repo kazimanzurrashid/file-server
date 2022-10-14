@@ -9,12 +9,8 @@ const setDefault = (defaultValue: string, ...envKeys: string[]): string => {
   return defaultValue;
 };
 
-const isDefault = (value: string): boolean => {
-  if (!value) {
-    return true;
-  }
-
-  return /^<PUT_YOUR_\w+>$/.test(value);
+export const isDefault = (value: string): boolean => {
+  return !value || /^<PUT_YOUR_\w+>$/.test(value);
 };
 
 export default {
@@ -78,7 +74,7 @@ export default {
         'AWS_ACCESS_KEY_ID'
       ),
       secretAccessKey: setDefault(
-        '<PUT_AWS_SECRET_ACCESS_KEY>',
+        '<PUT_YOUR_AWS_SECRET_ACCESS_KEY>',
         'AWS_SECRET_ACCESS_KEY'
       ),
       region: setDefault('<PUT_YOUR_AWS_REGION>', 'AWS_REGION'),
@@ -94,20 +90,32 @@ export default {
         '<PUT_YOUR_AZ_STORAGE_ACCOUNT_ACCESS_KEY>',
         'AZ_STORAGE_ACCOUNT_ACCESS_KEY'
       ),
-      storageContainerName: setDefault(
-        '<PUT_YOUR_AZ_STORAGE_CONTAINER_NAMW>',
-        'AZ_STORAGE_CONTAINER_NAME'
+      storageContainer: setDefault(
+        '<PUT_YOUR_AZ_STORAGE_CONTAINER>',
+        'AZ_STORAGE_CONTAINER'
       )
     }
   },
 
   garbageCollection: {
-    enabled: ['true', 'yes', 'y'].includes(setDefault('true', 'GC_ENABLED')),
+    enabled: ['true', 'yes', 'y'].includes(setDefault('false', 'GC_ENABLED')),
     cronExpression: setDefault('0 1 * * *', 'GC_INACTIVE_CRON'), // Run every night @ 1am
     inactiveDuration: setDefault('14d', 'GC_INACTIVE_DURATION')
   },
 
   validate(): void {
+    if (this.rateLimit.max.downloads < 1) {
+      throw new Error(
+        'Rate limit daily max downloads must be a positive integer'
+      );
+    }
+
+    if (this.rateLimit.max.uploads < 1) {
+      throw new Error(
+        'Rate limit daily max uploads must be a positive integer'
+      );
+    }
+
     const supportedRateLimitProviders = 'redis,in-memory'.split(',');
 
     if (!supportedRateLimitProviders.includes(this.rateLimit.provider)) {
@@ -122,18 +130,6 @@ export default {
       if (isDefault(this.rateLimit.redis.uri)) {
         throw new Error('Redis connection string must be set.');
       }
-    }
-
-    if (this.rateLimit.max.downloads < 1) {
-      throw new Error(
-        'Rate limit daily max downloads must be a positive integer'
-      );
-    }
-
-    if (this.rateLimit.max.uploads < 1) {
-      throw new Error(
-        'Rate limit daily max uploads must be a positive integer'
-      );
     }
 
     const mongoDB = ['mongo', 'mongodb'];
@@ -154,12 +150,12 @@ export default {
       }
 
       if (isDefault(this.db.mongodb.collection)) {
-        throw new Error('Cannot unset mongodb collection.');
+        throw new Error('Mongodb collection must be set.');
       }
     }
 
     if (isDefault(this.storage.tempLocation)) {
-      throw new Error('Cannot unset temp location.');
+      throw new Error('Storage temp location must be set.');
     }
 
     const gcp = 'gcp/google'.split('/');
@@ -209,12 +205,12 @@ export default {
         throw new Error('AZ storage account access key must be set.');
       }
 
-      if (isDefault(this.storage.az.storageContainerName)) {
+      if (isDefault(this.storage.az.storageContainer)) {
         throw new Error('AZ storage container name must be set.');
       }
     } else {
       if (isDefault(this.storage.local.location)) {
-        throw new Error('Cannot unset local storage location.');
+        throw new Error('Local storage location must be set.');
       }
     }
 

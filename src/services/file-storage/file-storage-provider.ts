@@ -101,7 +101,7 @@ export default function fileStorageProvider(
       container.registerInstance('blobClient', client);
       container.registerInstance(
         'azContainerName',
-        config.storage.az.storageContainerName
+        config.storage.az.storageContainer
       );
 
       return container.resolve(AzFileStorage);

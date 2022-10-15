@@ -33,15 +33,6 @@ describe('fileRepositoryProvider', () => {
   });
 
   describe('mongodb', () => {
-    let originalUri: string;
-
-    beforeAll(() => {
-      originalUri = config.db.mongodb.uri;
-
-      config.db.provider = 'mongodb';
-      config.db.mongodb.uri = 'mongodb://test:test@mongodb:27017/test';
-    });
-
     describe('success', () => {
       let mockedLoggerInfo: jest.Mock;
       let mockedCreateCollection: jest.Mock;
@@ -50,6 +41,8 @@ describe('fileRepositoryProvider', () => {
       let repository: FileRepository;
 
       beforeAll(() => {
+        config.db.provider = 'mongodb';
+
         mockedLoggerInfo = jest.fn();
 
         container.registerInstance<Logger>('Logger', {
@@ -103,6 +96,8 @@ describe('fileRepositoryProvider', () => {
       let repository: FileRepository;
 
       beforeAll(() => {
+        config.db.provider = 'mongodb';
+
         mockedLoggerError = jest.fn();
 
         container.registerInstance<Logger>('Logger', {
@@ -135,10 +130,6 @@ describe('fileRepositoryProvider', () => {
       it('logs when failed to connected', () => {
         expect(mockedLoggerError).toHaveBeenCalled();
       });
-    });
-
-    afterAll(async () => {
-      config.db.mongodb.uri = originalUri;
     });
   });
 

@@ -35,8 +35,8 @@ export default function fileRepositoryProvider(
       const ensureIndex = async (
         name: string,
         attr: string,
-        ascending = true,
-        unique = false
+        ascending: boolean,
+        unique: boolean
       ): Promise<void> => {
         const exists = await collection.indexExists(name);
 

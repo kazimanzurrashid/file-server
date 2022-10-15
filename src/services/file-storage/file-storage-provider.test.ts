@@ -3,8 +3,7 @@ import 'reflect-metadata';
 import { container } from 'tsyringe';
 
 import config from '../../config';
-
-import FileStorage from './file-storage';
+import type FileStorage from './file-storage';
 import fileStorageProvider from './file-storage-provider';
 import LocalFileStorage from './local-file-storage';
 import GcpFileStorage from './gcp-file-storage';

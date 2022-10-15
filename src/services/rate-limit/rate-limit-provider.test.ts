@@ -33,21 +33,14 @@ describe('rateLimitProvider', () => {
   });
 
   describe('redis', () => {
-    let originalUri: string;
-
-    beforeAll(() => {
-      originalUri = config.rateLimit.redis.uri;
-
-      config.rateLimit.provider = 'redis';
-      config.rateLimit.redis.uri = 'redis://localhost:6379';
-    });
-
     describe('success', () => {
       let mockedLoggerInfo: jest.Mock;
 
       let rateLimit: RateLimit;
 
       beforeAll(() => {
+        config.rateLimit.provider = 'redis';
+
         mockedLoggerInfo = jest.fn();
 
         container.registerInstance<Logger>('Logger', {
@@ -83,6 +76,8 @@ describe('rateLimitProvider', () => {
       let rateLimit: RateLimit;
 
       beforeAll(() => {
+        config.rateLimit.provider = 'redis';
+
         mockedLoggerError = jest.fn();
 
         container.registerInstance<Logger>('Logger', {
@@ -112,10 +107,6 @@ describe('rateLimitProvider', () => {
       it('logs when failed to connected', () => {
         expect(mockedLoggerError).toHaveBeenCalled();
       });
-    });
-
-    afterAll(async () => {
-      config.rateLimit.redis.uri = originalUri;
     });
   });
 

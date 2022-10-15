@@ -1,4 +1,4 @@
-const setDefault = (defaultValue: string, ...envKeys: string[]): string => {
+function setDefault(defaultValue: string, ...envKeys: string[]): string {
   for (const key of envKeys) {
     const value = process.env[key];
     if (value) {
@@ -7,11 +7,11 @@ const setDefault = (defaultValue: string, ...envKeys: string[]): string => {
   }
 
   return defaultValue;
-};
+}
 
-export const isDefault = (value: string): boolean => {
+export function isDefault(value: string): boolean {
   return !value || /^<PUT_YOUR_\w+>$/.test(value);
-};
+}
 
 export default {
   port: setDefault('3002', 'PORT', 'FILE_SERVER_PORT'),

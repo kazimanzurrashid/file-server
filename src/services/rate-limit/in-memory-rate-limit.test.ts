@@ -131,4 +131,26 @@ describe('InMemoryRateLimit', () => {
       expect(newCount).toEqual(oldCount + 1);
     });
   });
+
+  describe('reset', () => {
+    let count: number;
+
+    beforeAll(async () => {
+      const rateLimit = new InMemoryRateLimit({
+        uploads: 5,
+        downloads: 15
+      });
+
+      await rateLimit.recordUpload(IpAddress);
+      await rateLimit.recordDownload(IpAddress);
+
+      await rateLimit.reset();
+
+      count = rateLimit.records.size;
+    });
+
+    it('resets', function () {
+      expect(count).toEqual(0);
+    });
+  });
 });

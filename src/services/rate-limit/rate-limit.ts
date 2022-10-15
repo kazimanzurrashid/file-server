@@ -4,4 +4,6 @@ export default interface RateLimit {
 
   canDownload(ipAddress: string): Promise<boolean>;
   recordDownload(ipAddress: string): Promise<void>;
+
+  reset(): Promise<void>;
 }

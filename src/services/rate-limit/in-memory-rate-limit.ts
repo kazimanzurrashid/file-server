@@ -1,16 +1,16 @@
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 
 import RateLimit from './rate-limit';
-import createKeyPrefix from './create-key-prefix';
+import { prefix } from './prefix';
 
 export interface Stat {
   downloads: number;
   uploads: number;
 }
 
-@injectable()
+@singleton()
 export default class InMemoryRateLimit implements RateLimit {
-  private readonly records = new Map<string, Stat>();
+  private readonly _records = new Map<string, Stat>();
 
   constructor(
     @inject('rateLimitMax')
@@ -19,6 +19,10 @@ export default class InMemoryRateLimit implements RateLimit {
       readonly downloads: number;
     }
   ) {}
+
+  get records(): Map<string, Stat> {
+    return this._records;
+  }
 
   async canUpload(ipAddress: string): Promise<boolean> {
     const allowed = this.allowed(
@@ -56,8 +60,14 @@ export default class InMemoryRateLimit implements RateLimit {
     return Promise.resolve();
   }
 
+  async reset(): Promise<void> {
+    this._records.clear();
+
+    return Promise.resolve();
+  }
+
   stat(ipAddress: string): Stat {
-    const key = createKeyPrefix(ipAddress);
+    const key = prefix(ipAddress);
 
     return this.localStat(key);
   }
@@ -66,18 +76,18 @@ export default class InMemoryRateLimit implements RateLimit {
     ipAddress: string,
     predicate: (stat: Stat) => boolean
   ): boolean {
-    const key = createKeyPrefix(ipAddress);
+    const key = prefix(ipAddress);
 
     return predicate(this.localStat(key));
   }
 
   private record(ipAddress: string, action: (stat: Stat) => Stat): void {
-    const key = createKeyPrefix(ipAddress);
+    const key = prefix(ipAddress);
 
-    this.records.set(key, action(this.localStat(key)));
+    this._records.set(key, action(this.localStat(key)));
   }
 
   private localStat(key: string): Stat {
-    return this.records.get(key) || { uploads: 0, downloads: 0 };
+    return this._records.get(key) || { uploads: 0, downloads: 0 };
   }
 }

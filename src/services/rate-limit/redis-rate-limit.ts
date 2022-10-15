@@ -2,7 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import { RedisClientType } from '@redis/client';
 
 import RateLimit from './rate-limit';
-import createKeyPrefix from './create-key-prefix';
+import { generateTimestamp, prefix } from './prefix';
 
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
@@ -19,7 +19,7 @@ export default class RedisRateLimit implements RateLimit {
   ) {}
 
   async canUpload(ipAddress: string): Promise<boolean> {
-    const key = `${createKeyPrefix(ipAddress)}:uploads`;
+    const key = `${prefix(ipAddress)}:uploads`;
 
     const uploads = Number(await this.client.get(key));
 
@@ -27,13 +27,13 @@ export default class RedisRateLimit implements RateLimit {
   }
 
   async recordUpload(ipAddress: string): Promise<void> {
-    const key = `${createKeyPrefix(ipAddress)}:uploads`;
+    const key = `${prefix(ipAddress)}:uploads`;
 
     await this.client.multi().incr(key).expire(key, ONE_DAY_IN_SECONDS).exec();
   }
 
   async canDownload(ipAddress: string): Promise<boolean> {
-    const key = `${createKeyPrefix(ipAddress)}:downloads`;
+    const key = `${prefix(ipAddress)}:downloads`;
 
     const downloads = Number(await this.client.get(key));
 
@@ -41,8 +41,14 @@ export default class RedisRateLimit implements RateLimit {
   }
 
   async recordDownload(ipAddress: string): Promise<void> {
-    const key = `${createKeyPrefix(ipAddress)}:downloads`;
+    const key = `${prefix(ipAddress)}:downloads`;
 
     await this.client.multi().incr(key).expire(key, ONE_DAY_IN_SECONDS).exec();
+  }
+
+  async reset(): Promise<void> {
+    const pattern = `${generateTimestamp()}:*`;
+
+    await this.client.del(pattern);
   }
 }

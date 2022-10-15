@@ -23,10 +23,11 @@ describe('InMemoryFileRepository', () => {
   };
 
   describe('add', () => {
-    const records: FileInfo[] = [];
+    let repo: InMemoryFileRepository;
 
     beforeAll(async () => {
-      const repo = new InMemoryFileRepository(records);
+      repo = new InMemoryFileRepository();
+
       await repo.add({
         publicKey: PublicKey,
         privateKey: PrivateKey,
@@ -37,7 +38,7 @@ describe('InMemoryFileRepository', () => {
     });
 
     it('adds the provided file', () => {
-      const info = records[0];
+      const info = repo.records[0];
 
       expect(info).toBeDefined();
       expect(info.publicKey).toEqual(PublicKey);
@@ -51,18 +52,18 @@ describe('InMemoryFileRepository', () => {
 
   describe('delete', () => {
     describe('when called for existent file', () => {
-      const records: FileInfo[] = [];
+      let repo: InMemoryFileRepository;
       let ret: FileInfo | undefined;
 
       beforeAll(async () => {
-        records.push(createFileInfo());
+        repo = new InMemoryFileRepository();
+        repo.records.push(createFileInfo());
 
-        const repo = new InMemoryFileRepository(records);
         ret = await repo.delete(PrivateKey);
       });
 
       it('deletes the provided file', () => {
-        expect(records.length).toEqual(0);
+        expect(repo.records.length).toEqual(0);
       });
 
       it('returns the deleted file info', () => {
@@ -71,18 +72,18 @@ describe('InMemoryFileRepository', () => {
     });
 
     describe('when called for non-existent file', () => {
-      const records: FileInfo[] = [];
+      let repo: InMemoryFileRepository;
       let ret: FileInfo | undefined;
 
       beforeAll(async () => {
-        records.push(createFileInfo());
+        repo = new InMemoryFileRepository();
+        repo.records.push(createFileInfo());
 
-        const repo = new InMemoryFileRepository(records);
         ret = await repo.delete('i-dont-exist');
       });
 
       it('does nothing', () => {
-        expect(records.length).toEqual(1);
+        expect(repo.records.length).toEqual(1);
       });
 
       it('returns undefined', () => {
@@ -96,9 +97,8 @@ describe('InMemoryFileRepository', () => {
       let info: FileInfo;
 
       beforeAll(async () => {
-        const records: FileInfo[] = [createFileInfo()];
-
-        const repo = new InMemoryFileRepository(records);
+        const repo = new InMemoryFileRepository();
+        repo.records.push(createFileInfo());
 
         info = await repo.get(PublicKey);
       });
@@ -117,9 +117,8 @@ describe('InMemoryFileRepository', () => {
       let info: FileInfo;
 
       beforeAll(async () => {
-        const records: FileInfo[] = [createFileInfo()];
-
-        const repo = new InMemoryFileRepository(records);
+        const repo = new InMemoryFileRepository();
+        repo.records.push(createFileInfo());
 
         info = await repo.get('i-dont-exist');
       });
@@ -134,9 +133,8 @@ describe('InMemoryFileRepository', () => {
       let newLastActivity: Date;
 
       beforeAll(async () => {
-        const records: FileInfo[] = [createFileInfo()];
-
-        const repo = new InMemoryFileRepository(records);
+        const repo = new InMemoryFileRepository();
+        repo.records.push(createFileInfo());
 
         const oldInfo = await repo.get(PublicKey);
         oldLastActivity = oldInfo.lastActivity;
@@ -169,7 +167,8 @@ describe('InMemoryFileRepository', () => {
         records.push(file);
       }
 
-      const repo = new InMemoryFileRepository(records);
+      const repo = new InMemoryFileRepository();
+      repo.records.push(...records);
 
       const since = clock.now();
       since.setDate(since.getDate() - 2);

@@ -2,16 +2,25 @@ import 'reflect-metadata';
 
 import { join, resolve as pathResolve } from 'path';
 
+import { container } from 'tsyringe';
+
 import type { Express } from 'express';
 
 import request from 'supertest';
 
 import config from './config';
 import createApp from './create-app';
+import FileRepository, {
+  FileInfo
+} from './services/file-repositoy/file-repository';
+import FileStorage from './services/file-storage/file-storage';
+import RateLimit from './services/rate-limit/rate-limit';
 
 type ErrorResult = {
   error: string;
 };
+
+type UploadedFile = Pick<FileInfo, 'privateKey' | 'publicKey'>;
 
 async function runApp(
   action: (newApp: Express) => Promise<void>
@@ -42,6 +51,26 @@ async function runApp(
   });
 }
 
+async function remove(...uploadedFiles: UploadedFile[]): Promise<void> {
+  const repository = container.resolve<FileRepository>('FileRepository');
+  const storage = container.resolve<FileStorage>('FileStorage');
+
+  for (const uploadedFile of uploadedFiles) {
+    const file = await repository.get(uploadedFile.publicKey);
+
+    if (!file) {
+      break;
+    }
+
+    await storage.delete(file.path);
+    await repository.delete(uploadedFile.privateKey);
+  }
+}
+
+async function resetStat(): Promise<void> {
+  await container.resolve<RateLimit>('RateLimit').reset();
+}
+
 function range(start: number, end: number): number[] {
   return Array.from({ length: end + 1 - start }, (_, i) => start + i);
 }
@@ -51,12 +80,16 @@ describe('integrations', () => {
 
   describe('POST /files', () => {
     describe('success', () => {
+      const uploadedFiles: UploadedFile[] = [];
+
       let statusCode: number;
-      let result: { publicKey: string; privateKey: string };
+      let result: UploadedFile;
 
       beforeAll(async () => {
         await runApp(async (app) => {
           const res = await request(app).post('/files').attach('file', file);
+
+          uploadedFiles.push(res.body);
 
           statusCode = res.statusCode;
           result = res.body;
@@ -71,9 +104,15 @@ describe('integrations', () => {
         expect(result.publicKey).toBeDefined();
         expect(result.privateKey).toBeDefined();
       });
+
+      afterAll(async () => {
+        await Promise.all([remove(...uploadedFiles), resetStat()]);
+      });
     });
 
     describe('when daily upload limit already reached', () => {
+      const uploadedFiles: UploadedFile[] = [];
+
       let statusCode: number;
       let result: ErrorResult;
 
@@ -83,14 +122,18 @@ describe('integrations', () => {
 
           await Promise.all(
             range(1, config.rateLimit.max.uploads).map(async () => {
-              await api.post('/files').attach('file', file).expect(201);
+              const res1 = await api
+                .post('/files')
+                .attach('file', file)
+                .expect(201);
+              uploadedFiles.push(res1.body);
             })
           );
 
-          const res = await api.post('/files').attach('file', file);
+          const res2 = await api.post('/files').attach('file', file);
 
-          statusCode = res.statusCode;
-          result = res.body;
+          statusCode = res2.statusCode;
+          result = res2.body;
         });
       });
 
@@ -103,6 +146,10 @@ describe('integrations', () => {
           // eslint-disable-next-line i18n-text/no-en
           'You have already reached your daily upload limit!'
         );
+      });
+
+      afterAll(async () => {
+        await Promise.all([remove(...uploadedFiles), resetStat()]);
       });
     });
 
@@ -132,6 +179,8 @@ describe('integrations', () => {
 
   describe('DELETE /files/:privateKey', () => {
     describe('success', () => {
+      const uploadedFiles: UploadedFile[] = [];
+
       let statusCode: number;
 
       beforeAll(async () => {
@@ -143,6 +192,8 @@ describe('integrations', () => {
             .attach('file', file)
             .expect(201);
 
+          uploadedFiles.push(res1.body);
+
           const res2 = await api.delete(`/files/${res1.body.privateKey}`);
 
           statusCode = res2.statusCode;
@@ -151,6 +202,10 @@ describe('integrations', () => {
 
       it('responds with http status code 204', () => {
         expect(statusCode).toEqual(204);
+      });
+
+      afterAll(async () => {
+        await Promise.all([remove(...uploadedFiles), resetStat()]);
       });
     });
 
@@ -182,6 +237,8 @@ describe('integrations', () => {
 
   describe('GET /files/:publicKey', () => {
     describe('success', () => {
+      const uploadedFiles: UploadedFile[] = [];
+
       let statusCode: number;
       let contentType: string;
       let body: Buffer;
@@ -194,6 +251,8 @@ describe('integrations', () => {
             .post('/files')
             .attach('file', file)
             .expect(201);
+
+          uploadedFiles.push(res1.body);
 
           const res2 = await api.get(`/files/${res1.body.publicKey}`);
 
@@ -214,9 +273,15 @@ describe('integrations', () => {
       it('returns file body', () => {
         expect(body).toBeDefined();
       });
+
+      afterAll(async () => {
+        await Promise.all([remove(...uploadedFiles), resetStat()]);
+      });
     });
 
     describe('when daily download limit already reached', () => {
+      const uploadedFiles: UploadedFile[] = [];
+
       let statusCode: number;
       let result: ErrorResult;
 
@@ -228,6 +293,8 @@ describe('integrations', () => {
             .post('/files')
             .attach('file', file)
             .expect(201);
+
+          uploadedFiles.push(res1.body);
 
           await Promise.all(
             range(1, config.rateLimit.max.downloads).map(async () => {
@@ -251,6 +318,10 @@ describe('integrations', () => {
           // eslint-disable-next-line i18n-text/no-en
           'You have already reached your daily download limit!'
         );
+      });
+
+      afterAll(async () => {
+        await Promise.all([remove(...uploadedFiles), resetStat()]);
       });
     });
 

@@ -1,11 +1,15 @@
-import { injectable } from 'tsyringe';
+import { singleton } from 'tsyringe';
 
 import clock from '../../lib/clock';
 import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
 
-@injectable()
+@singleton()
 export default class InMemoryFileRepository implements FileRepository {
-  constructor(private readonly records: FileInfo[] = []) {}
+  private readonly _records: FileInfo[] = [];
+
+  get records(): FileInfo[] {
+    return this._records;
+  }
 
   async add(arg: AddFileInfo): Promise<void> {
     const info = {
@@ -13,16 +17,16 @@ export default class InMemoryFileRepository implements FileRepository {
       lastActivity: clock.now()
     };
 
-    this.records.push(info);
+    this._records.push(info);
 
     return Promise.resolve();
   }
 
   async delete(privateKey: string): Promise<FileInfo | undefined> {
-    const index = this.records.findIndex((fi) => fi.privateKey === privateKey);
+    const index = this._records.findIndex((fi) => fi.privateKey === privateKey);
 
     if (index > -1) {
-      const deleted = this.records.splice(index, 1);
+      const deleted = this._records.splice(index, 1);
 
       return Promise.resolve(deleted[0]);
     }
@@ -31,7 +35,7 @@ export default class InMemoryFileRepository implements FileRepository {
   }
 
   async get(publicKey: string): Promise<FileInfo | undefined> {
-    const info = this.records.find((fi) => fi.publicKey === publicKey);
+    const info = this._records.find((fi) => fi.publicKey === publicKey);
 
     if (info) {
       info.lastActivity = clock.now();
@@ -41,7 +45,7 @@ export default class InMemoryFileRepository implements FileRepository {
   }
 
   async listInactiveSince(timestamp: Date, max = 25): Promise<FileInfo[]> {
-    const filtered = this.records
+    const filtered = this._records
       .filter((fi) => fi.lastActivity.getTime() <= timestamp.getTime())
       .slice(0, max);
 

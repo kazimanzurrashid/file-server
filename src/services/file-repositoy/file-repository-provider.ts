@@ -13,7 +13,7 @@ export default function fileRepositoryProvider(
 ): FileRepository {
   switch (config.db.provider) {
     case 'in-memory': {
-      return new InMemoryFileRepository();
+      return container.resolve(InMemoryFileRepository);
     }
     case 'mongo':
     case 'mongodb': {

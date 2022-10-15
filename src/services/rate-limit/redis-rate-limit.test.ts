@@ -172,4 +172,28 @@ describe('RedisRateLimit', () => {
       expect(mockedExpire).toHaveBeenCalled();
     });
   });
+
+  describe('reset', () => {
+    let mockedDelete: jest.Mock;
+
+    beforeAll(async () => {
+      mockedDelete = jest.fn(async () => Promise.resolve());
+
+      const rateLimit = new RedisRateLimit(
+        {
+          uploads: 0,
+          downloads: 0
+        },
+        {
+          del: mockedDelete
+        } as unknown as RedisClientType
+      );
+
+      await rateLimit.reset();
+    });
+
+    it('delegates to redis del', () => {
+      expect(mockedDelete).toHaveBeenCalled();
+    });
+  });
 });

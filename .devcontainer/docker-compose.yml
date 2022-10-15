@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        VARIANT: 16-bullseye
+    command: sleep infinity
+    environment:
+      RATE_LIMIT_PROVIDER: redis
+      REDIS_URI: redis://redis:${REDIS_PORT}
+      DB_PROVIDER: mongodb
+      MONGODB_URI: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}/${MONGODB_DATABASE}
+      NODE_ENV: development
+      PORT: ${PORT}
+    ports:
+      - ${PORT}:${PORT}
+    volumes:
+      - ..:/workspace:cached
+    depends_on:
+      - redis
+      - mongodb
+  redis:
+    image: redis:7.0.5-alpine3.16
+    ports:
+      - "${REDIS_PORT}"
+    volumes:
+      - redis-data:/data
+  mongodb:
+    image: mongo:6.0.2-focal
+    command: mongod --auth
+    ports:
+      - "${MONGODB_PORT}"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+    volumes:
+      - mongo-data:/data/db
+      - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js
+  mongo-express:
+    image: mongo-express:1.0.0-alpha.4
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}
+    depends_on:
+      - mongodb
+volumes:
+  redis-data:
+  mongo-data:

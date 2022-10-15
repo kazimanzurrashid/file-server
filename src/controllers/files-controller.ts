@@ -46,7 +46,8 @@ export default class FilesController {
       privateKey,
       path,
       mimeType: file.mimetype,
-      size: file.size
+      size: file.size,
+      originalName: file.originalname
     });
 
     await Promise.all([

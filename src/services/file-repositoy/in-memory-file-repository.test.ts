@@ -8,7 +8,9 @@ describe('InMemoryFileRepository', () => {
   const PublicKey = 'public-key';
   const PrivateKey = 'private-key';
   const MimeType = 'image/png';
-  const Path = '/my_photo.jpg';
+  const Path = 'a1f1457845cf420c883d46abc5a5c844.jpg';
+  const OriginalName = 'my-photo.jpg';
+
   const Size = 100;
 
   const createFileInfo = (): FileInfo => {
@@ -18,7 +20,8 @@ describe('InMemoryFileRepository', () => {
       mimeType: MimeType,
       path: Path,
       size: Size,
-      lastActivity: clock.now()
+      lastActivity: clock.now(),
+      originalName: OriginalName
     };
   };
 
@@ -28,13 +31,7 @@ describe('InMemoryFileRepository', () => {
     beforeAll(async () => {
       repo = new InMemoryFileRepository();
 
-      await repo.add({
-        publicKey: PublicKey,
-        privateKey: PrivateKey,
-        mimeType: MimeType,
-        path: Path,
-        size: Size
-      });
+      await repo.add(createFileInfo());
     });
 
     it('adds the provided file', () => {
@@ -46,6 +43,7 @@ describe('InMemoryFileRepository', () => {
       expect(info.mimeType).toEqual(MimeType);
       expect(info.path).toEqual(Path);
       expect(info.size).toEqual(Size);
+      expect(info.originalName).toEqual(OriginalName);
       expect(info.lastActivity).toBeDefined();
     });
   });

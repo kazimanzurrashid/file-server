@@ -5,6 +5,7 @@ export interface FileInfo {
   path: string;
   size: number;
   lastActivity: Date;
+  originalName: string;
 }
 
 export type AddFileInfo = Omit<FileInfo, 'lastActivity'>;

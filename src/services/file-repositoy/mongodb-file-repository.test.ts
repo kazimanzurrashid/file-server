@@ -25,9 +25,10 @@ describe('MongoDBFileRepository', () => {
       await repo.add({
         publicKey: Key.generate(),
         privateKey: Key.generate(),
-        path: 'test.png',
+        path: 'a1f1457845cf420c883d46abc5a5c844.png',
         size: 1000,
-        mimeType: 'image/png'
+        mimeType: 'image/png',
+        originalName: 'my_photo.png'
       });
     });
 

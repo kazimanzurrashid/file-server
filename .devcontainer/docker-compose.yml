@@ -39,7 +39,13 @@ services:
       MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
     volumes:
       - mongo-data:/data/db
-      - ./init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js
+      - ./../init-mongodb.js:/docker-entrypoint-initdb.d/init-mongodb.js
+    healthcheck:
+      test: |
+        bash -c "if mongosh -u ${MONGODB_USERNAME} -p ${MONGODB_PASSWORD} --eval 'db.runCommand({ ping: 1}).ok ? 0 : 2;' --quiet; then exit 0; fi; exit 1;"
+      timeout: 2s
+      interval: 5s
+      start_period: 15s
   mongo-express:
     image: mongo-express:1.0.0-alpha.4
     ports:
@@ -47,7 +53,8 @@ services:
     environment:
       ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:${MONGODB_PORT}
     depends_on:
-      - mongodb
+      mongodb:
+        condition: service_healthy
 volumes:
   redis-data:
   mongo-data:

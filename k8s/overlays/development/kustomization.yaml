@@ -14,5 +14,5 @@ secretGenerator:
     type: Opaque
     behavior: merge
     literals:
-      - MONGO_USERNAME=admin
-      - MONGO_PASSWORD=secret
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=secret

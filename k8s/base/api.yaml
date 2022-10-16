@@ -2,27 +2,31 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: storage
+  name: files
+  labels:
+    app: api
 spec:
   accessModes:
     - ReadWriteOnce
   capacity:
     storage: 0Mi
-  hostPath:
-    path: /data/storage
   storageClassName: standard
+  hostPath:
+    path: /data/files
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: storage
+  name: files
+  labels:
+    app: api
 spec:
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
       storage: 0Mi
-  volumeName: storage
+  volumeName: files
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -70,13 +74,13 @@ spec:
             - name: MONGODB_URI
               value: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:27017/${MONGODB_DATABASE}
             - name: STORAGE_TEMP_LOCATION
-              value: '.tmp'
+              value: /temp
             - name: STORAGE_PROVIDER
               value: local
             - name: LOCAL_STORAGE_LOCATION
-              value: '_storage'
+              value: /files
             - name: NODE_ENV
-              value: production
+              value: development
             - name: PORT
               value: "3002"
           resources:
@@ -89,14 +93,14 @@ spec:
           ports:
             - containerPort: 3002
           volumeMounts:
-            - name: storage
-              mountPath: '_storage'
+            - name: files
+              mountPath: /files
             - name: temp
-              mountPath: '.tmp'
+              mountPath: /temp
       volumes:
-        - name: storage
+        - name: files
           persistentVolumeClaim:
-            claimName: storage
+            claimName: files
         - name: temp
           emptyDir: {}
 ---

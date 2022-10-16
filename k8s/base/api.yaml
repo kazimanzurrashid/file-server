@@ -7,12 +7,9 @@ metadata:
     app: api
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   capacity:
     storage: 0Mi
-  storageClassName: standard
-  hostPath:
-    path: /data/files
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,7 +19,7 @@ metadata:
     app: api
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 0Mi
@@ -47,8 +44,6 @@ spec:
     spec:
       containers:
         - name: api
-          image: kazirashid/file-server:latest
-          imagePullPolicy: Always
           env:
             - name: RATE_LIMIT_PROVIDER
               value: redis
@@ -72,7 +67,7 @@ spec:
                   name: mongodb
                   key: MONGODB_DATABASE
             - name: MONGODB_URI
-              value: mongodb://${MONGODB_USERNAME}:${MONGODB_PASSWORD}@mongodb:27017/${MONGODB_DATABASE}
+              value: mongodb://$(MONGODB_USERNAME):$(MONGODB_PASSWORD)@mongodb:27017/$(MONGODB_DATABASE)
             - name: STORAGE_TEMP_LOCATION
               value: /temp
             - name: STORAGE_PROVIDER
@@ -138,4 +133,4 @@ spec:
   ports:
     - protocol: TCP
       port: 3002
-      nodePort: 30101
+      nodePort: 30100

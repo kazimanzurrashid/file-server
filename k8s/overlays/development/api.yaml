@@ -5,7 +5,11 @@ metadata:
   name: files
 spec:
   capacity:
-    storage: 128Mi
+    storage: 2Gi
+  hostPath:
+    path: /data/files
+  persistentVolumeReclaimPolicy: Delete
+  storageClassName: standard
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -14,7 +18,7 @@ metadata:
 spec:
   resources:
     requests:
-      storage: 128Mi
+      storage: 2Gi
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -25,6 +29,8 @@ spec:
     spec:
       containers:
         - name: api
+          image: kazirashid/file-server:latest
+          imagePullPolicy: Always
           resources:
             requests:
               cpu: 256m

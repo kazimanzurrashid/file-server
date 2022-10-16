@@ -7,12 +7,9 @@ metadata:
     app: redis
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   capacity:
     storage: 0Mi
-  storageClassName: standard
-  hostPath:
-    path: /data/redis
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -22,7 +19,7 @@ metadata:
     app: redis
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 0Mi

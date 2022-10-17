@@ -6,6 +6,7 @@ import { inject, injectable } from 'tsyringe';
 import {
   DeleteObjectCommand,
   GetObjectCommand,
+  HeadBucketCommand,
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3';
@@ -55,5 +56,19 @@ export default class AwsFileStorage implements FileStorage {
     const { Body } = await this.client.send(command);
 
     return Body as Pipeable;
+  }
+
+  async isLive(): Promise<boolean> {
+    try {
+      const command = new HeadBucketCommand({
+        Bucket: this.bucketName
+      });
+
+      await this.client.send(command);
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

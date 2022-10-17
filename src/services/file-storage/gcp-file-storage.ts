@@ -39,4 +39,14 @@ export default class GcpFileStorage implements FileStorage {
 
     return Promise.resolve(stream);
   }
+
+  async isLive(): Promise<boolean> {
+    try {
+      const exists = await this.bucket.exists();
+
+      return exists?.every((x) => x);
+    } catch (e) {
+      return false;
+    }
+  }
 }

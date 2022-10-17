@@ -1,5 +1,5 @@
 import { inject, injectable } from 'tsyringe';
-import { Collection } from 'mongodb';
+import { Collection, MongoClient } from 'mongodb';
 
 import clock from '../../lib/clock';
 import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
@@ -8,7 +8,9 @@ import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
 export default class MongoDBFileRepository implements FileRepository {
   constructor(
     @inject('mongoFilesCollection')
-    private readonly collection: Collection<FileInfo>
+    private readonly collection: Collection<FileInfo>,
+    @inject('mongoClient')
+    private readonly client: MongoClient
   ) {}
 
   async add(arg: AddFileInfo): Promise<void> {
@@ -47,5 +49,15 @@ export default class MongoDBFileRepository implements FileRepository {
         }
       )
       .toArray();
+  }
+
+  async isLive(): Promise<boolean> {
+    try {
+      await this.client.db().command({ ping: 1 });
+
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }

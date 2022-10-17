@@ -20,7 +20,7 @@ export default class InMemoryRateLimit implements RateLimit {
     }
   ) {}
 
-  get records(): Map<string, Stat> {
+  protected get records(): Map<string, Stat> {
     return this._records;
   }
 
@@ -61,9 +61,13 @@ export default class InMemoryRateLimit implements RateLimit {
   }
 
   async reset(): Promise<void> {
-    this._records.clear();
+    this.records.clear();
 
     return Promise.resolve();
+  }
+
+  async isLive(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   stat(ipAddress: string): Stat {
@@ -84,10 +88,10 @@ export default class InMemoryRateLimit implements RateLimit {
   private record(ipAddress: string, action: (stat: Stat) => Stat): void {
     const key = prefix(ipAddress);
 
-    this._records.set(key, action(this.localStat(key)));
+    this.records.set(key, action(this.localStat(key)));
   }
 
   private localStat(key: string): Stat {
-    return this._records.get(key) || { uploads: 0, downloads: 0 };
+    return this.records.get(key) || { uploads: 0, downloads: 0 };
   }
 }

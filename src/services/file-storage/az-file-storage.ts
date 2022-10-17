@@ -47,6 +47,14 @@ export default class AzFileStorage implements FileStorage {
     return readableStreamBody;
   }
 
+  async isLive(): Promise<boolean> {
+    try {
+      return await this.container.exists();
+    } catch (e) {
+      return false;
+    }
+  }
+
   private getFile(path: string): BlockBlobClient {
     return this.container.getBlockBlobClient(path);
   }

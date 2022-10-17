@@ -113,4 +113,50 @@ describe('AwsFileStorage', () => {
       expect(res).toBeDefined();
     });
   });
+
+  describe('isLive', () => {
+    describe('when bucket exists', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedS3Send = jest.fn(async () => Promise.resolve());
+
+        const s3 = {
+          send: mockedS3Send
+        };
+
+        res = await new AwsFileStorage(
+          s3 as unknown as S3Client,
+          Bucket,
+          undefined
+        ).isLive();
+      });
+
+      it('returns true', () => {
+        expect(res).toEqual(true);
+      });
+    });
+  });
+
+  describe('when bucket does not exist', () => {
+    let res: boolean;
+
+    beforeAll(async () => {
+      const mockedS3Send = jest.fn(async () => Promise.reject(new Error()));
+
+      const s3 = {
+        send: mockedS3Send
+      };
+
+      res = await new AwsFileStorage(
+        s3 as unknown as S3Client,
+        Bucket,
+        undefined
+      ).isLive();
+    });
+
+    it('returns false', () => {
+      expect(res).toEqual(false);
+    });
+  });
 });

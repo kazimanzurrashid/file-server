@@ -2,6 +2,12 @@ import 'reflect-metadata';
 
 import InMemoryRateLimit, { Stat } from './in-memory-rate-limit';
 
+class InMemoryRateLimitTestDouble extends InMemoryRateLimit {
+  get internalRecords(): Map<string, Stat> {
+    return this.records;
+  }
+}
+
 describe('InMemoryRateLimit', () => {
   const IpAddress = '127.0.0.1';
 
@@ -10,7 +16,7 @@ describe('InMemoryRateLimit', () => {
       let allowed: boolean;
 
       beforeAll(async () => {
-        const rateLimit = new InMemoryRateLimit({
+        const rateLimit = new InMemoryRateLimitTestDouble({
           uploads: 5,
           downloads: 15
         });
@@ -27,7 +33,7 @@ describe('InMemoryRateLimit', () => {
       let allowed: boolean;
 
       beforeAll(async () => {
-        const rateLimit = new InMemoryRateLimit({
+        const rateLimit = new InMemoryRateLimitTestDouble({
           uploads: 2,
           downloads: 15
         });
@@ -49,7 +55,7 @@ describe('InMemoryRateLimit', () => {
     let newCount: number;
 
     beforeAll(async () => {
-      const rateLimit = new InMemoryRateLimit({
+      const rateLimit = new InMemoryRateLimitTestDouble({
         uploads: 5,
         downloads: 15
       });
@@ -73,7 +79,7 @@ describe('InMemoryRateLimit', () => {
       let allowed: boolean;
 
       beforeAll(async () => {
-        const rateLimit = new InMemoryRateLimit({
+        const rateLimit = new InMemoryRateLimitTestDouble({
           uploads: 5,
           downloads: 15
         });
@@ -90,7 +96,7 @@ describe('InMemoryRateLimit', () => {
       let allowed: boolean;
 
       beforeAll(async () => {
-        const rateLimit = new InMemoryRateLimit({
+        const rateLimit = new InMemoryRateLimitTestDouble({
           uploads: 5,
           downloads: 0
         });
@@ -112,7 +118,7 @@ describe('InMemoryRateLimit', () => {
     let newCount: number;
 
     beforeAll(async () => {
-      const rateLimit = new InMemoryRateLimit({
+      const rateLimit = new InMemoryRateLimitTestDouble({
         uploads: 5,
         downloads: 15
       });
@@ -136,7 +142,7 @@ describe('InMemoryRateLimit', () => {
     let count: number;
 
     beforeAll(async () => {
-      const rateLimit = new InMemoryRateLimit({
+      const rateLimit = new InMemoryRateLimitTestDouble({
         uploads: 5,
         downloads: 15
       });
@@ -146,11 +152,22 @@ describe('InMemoryRateLimit', () => {
 
       await rateLimit.reset();
 
-      count = rateLimit.records.size;
+      count = rateLimit.internalRecords.size;
     });
 
     it('resets', function () {
       expect(count).toEqual(0);
+    });
+  });
+
+  describe('isLive', () => {
+    it('always returns true', async () => {
+      const live = await new InMemoryRateLimitTestDouble({
+        uploads: 1,
+        downloads: 1
+      }).isLive();
+
+      expect(live).toEqual(true);
     });
   });
 });

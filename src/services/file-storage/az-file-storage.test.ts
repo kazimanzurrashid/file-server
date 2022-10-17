@@ -3,7 +3,7 @@ import { Stream } from 'stream';
 
 import { BlobServiceClient } from '@azure/storage-blob';
 
-import { Pipeable } from './file-storage';
+import type { Pipeable } from './file-storage';
 import AzFileStorage from './az-file-storage';
 
 describe('AzFileStorage', () => {
@@ -104,6 +104,62 @@ describe('AzFileStorage', () => {
 
     it('returns underlying stream', () => {
       expect(res).toBeDefined();
+    });
+  });
+
+  describe('isLive', () => {
+    describe('when container exists', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedContainerExists = jest.fn(async () =>
+          Promise.resolve(true)
+        );
+
+        const client = {
+          getContainerClient: () => ({
+            exists: mockedContainerExists
+          })
+        };
+
+        const storage = new AzFileStorage(
+          client as unknown as BlobServiceClient,
+          Container
+        );
+
+        res = await storage.isLive();
+      });
+
+      it('returns true', () => {
+        expect(res).toEqual(true);
+      });
+    });
+
+    describe('when container does not exist', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedContainerExists = jest.fn(async () =>
+          Promise.reject(new Error())
+        );
+
+        const client = {
+          getContainerClient: () => ({
+            exists: mockedContainerExists
+          })
+        };
+
+        const storage = new AzFileStorage(
+          client as unknown as BlobServiceClient,
+          Container
+        );
+
+        res = await storage.isLive();
+      });
+
+      it('returns false', () => {
+        expect(res).toEqual(false);
+      });
     });
   });
 });

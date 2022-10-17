@@ -85,6 +85,14 @@ spec:
             limits:
               cpu: 0m
               memory: 0Mi
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: /3002
+          readinessProbe:
+            httpGet:
+              path: /health?detail=yes
+              port: 3002
           ports:
             - containerPort: 3002
           volumeMounts:

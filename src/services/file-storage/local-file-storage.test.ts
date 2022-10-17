@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { ReadStream } from 'fs';
 
-import { Pipeable } from './file-storage';
+import type { Pipeable } from './file-storage';
 import LocalFileStorage from './local-file-storage';
 
 describe('LocalFileStorage', () => {
@@ -73,6 +73,19 @@ describe('LocalFileStorage', () => {
 
     it('returns underlying stream', () => {
       expect(res).toBeDefined();
+    });
+  });
+
+  describe('isLive', () => {
+    it('always returns true', async () => {
+      const live = await new LocalFileStorage(
+        RootLocation,
+        undefined,
+        undefined,
+        undefined
+      ).isLive();
+
+      expect(live).toEqual(true);
     });
   });
 });

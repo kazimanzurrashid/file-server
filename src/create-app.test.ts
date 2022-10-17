@@ -35,6 +35,13 @@ describe('createApp', () => {
     expect(router).toBeDefined();
   });
 
+  it('mounts health router', () => {
+    const router = app._router.stack.find(
+      (x) => x.name === 'router' && x.regexp.toString().includes('/health')
+    );
+    expect(router).toBeDefined();
+  });
+
   it('mounts open-api router', () => {
     const router = app._router.stack.find(
       (x) => x.name === 'router' && x.regexp.toString() === '/^\\/?(?=\\/|$)/i'

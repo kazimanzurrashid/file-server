@@ -1,4 +1,6 @@
-export default interface RateLimit {
+import Service from '../service';
+
+export default interface RateLimit extends Service {
   canUpload(ipAddress: string): Promise<boolean>;
   recordUpload(ipAddress: string): Promise<void>;
 

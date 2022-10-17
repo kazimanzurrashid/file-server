@@ -22,8 +22,12 @@ import fileRepositoryProvider from './services/file-repositoy/file-repository-pr
 import type FileStorage from './services/file-storage/file-storage';
 import fileStorageProvider from './services/file-storage/file-storage-provider';
 
-import FilesController from './controllers/files-controller';
 import filesRouter from './routers/files-router';
+import FilesController from './controllers/files-controller';
+
+import healthRouter from './routers/health-router';
+import HealthController from './controllers/health-controller';
+
 import openApiRouter from './routers/open-api-router';
 
 export default function createApp(): Express {
@@ -120,6 +124,7 @@ export default function createApp(): Express {
         container.resolve('multer')
       )
     )
+    .use('/health', healthRouter(container.resolve(HealthController)))
     .use('/', openApiRouter())
     .all('*', (_, res: Response) => {
       res.status(404).json({

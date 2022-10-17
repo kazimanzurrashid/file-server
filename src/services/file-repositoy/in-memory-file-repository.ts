@@ -7,7 +7,7 @@ import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
 export default class InMemoryFileRepository implements FileRepository {
   private readonly _records: FileInfo[] = [];
 
-  get records(): FileInfo[] {
+  protected get records(): FileInfo[] {
     return this._records;
   }
 
@@ -17,16 +17,16 @@ export default class InMemoryFileRepository implements FileRepository {
       lastActivity: clock.now()
     };
 
-    this._records.push(info);
+    this.records.push(info);
 
     return Promise.resolve();
   }
 
   async delete(privateKey: string): Promise<FileInfo | undefined> {
-    const index = this._records.findIndex((fi) => fi.privateKey === privateKey);
+    const index = this.records.findIndex((fi) => fi.privateKey === privateKey);
 
     if (index > -1) {
-      const deleted = this._records.splice(index, 1);
+      const deleted = this.records.splice(index, 1);
 
       return Promise.resolve(deleted[0]);
     }
@@ -35,7 +35,7 @@ export default class InMemoryFileRepository implements FileRepository {
   }
 
   async get(publicKey: string): Promise<FileInfo | undefined> {
-    const info = this._records.find((fi) => fi.publicKey === publicKey);
+    const info = this.records.find((fi) => fi.publicKey === publicKey);
 
     if (info) {
       info.lastActivity = clock.now();
@@ -45,10 +45,14 @@ export default class InMemoryFileRepository implements FileRepository {
   }
 
   async listInactiveSince(timestamp: Date, max = 25): Promise<FileInfo[]> {
-    const filtered = this._records
+    const filtered = this.records
       .filter((fi) => fi.lastActivity.getTime() <= timestamp.getTime())
       .slice(0, max);
 
     return Promise.resolve(filtered);
+  }
+
+  async isLive(): Promise<boolean> {
+    return Promise.resolve(true);
   }
 }

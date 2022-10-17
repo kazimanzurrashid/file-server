@@ -1,3 +1,5 @@
+import Service from '../service';
+
 export interface FileInfo {
   publicKey: string;
   privateKey: string;
@@ -10,7 +12,7 @@ export interface FileInfo {
 
 export type AddFileInfo = Omit<FileInfo, 'lastActivity'>;
 
-export default interface FileRepository {
+export default interface FileRepository extends Service {
   add(arg: AddFileInfo): Promise<void>;
 
   delete(privateKey: string): Promise<FileInfo | undefined>;

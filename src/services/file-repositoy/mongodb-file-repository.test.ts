@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { Collection } from 'mongodb';
+import { Collection, MongoClient } from 'mongodb';
 
 import Key from '../../lib/key';
 
@@ -19,7 +19,8 @@ describe('MongoDBFileRepository', () => {
       };
 
       const repo = new MongoDBFileRepository(
-        col as unknown as Collection<FileInfo>
+        col as unknown as Collection<FileInfo>,
+        {} as unknown as MongoClient
       );
 
       await repo.add({
@@ -50,7 +51,8 @@ describe('MongoDBFileRepository', () => {
       };
 
       const repo = new MongoDBFileRepository(
-        col as unknown as Collection<FileInfo>
+        col as unknown as Collection<FileInfo>,
+        {} as unknown as MongoClient
       );
 
       await repo.delete(Key.generate());
@@ -74,7 +76,8 @@ describe('MongoDBFileRepository', () => {
       };
 
       const repo = new MongoDBFileRepository(
-        col as unknown as Collection<FileInfo>
+        col as unknown as Collection<FileInfo>,
+        {} as unknown as MongoClient
       );
 
       await repo.get(Key.generate());
@@ -98,7 +101,8 @@ describe('MongoDBFileRepository', () => {
       };
 
       const repo = new MongoDBFileRepository(
-        col as unknown as Collection<FileInfo>
+        col as unknown as Collection<FileInfo>,
+        {} as unknown as MongoClient
       );
 
       await repo.listInactiveSince(new Date());
@@ -106,6 +110,50 @@ describe('MongoDBFileRepository', () => {
 
     it('delegates to collection find', () => {
       expect(mockedFind).toHaveBeenCalled();
+    });
+  });
+
+  describe('isLive', () => {
+    describe('when alive', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const repo = new MongoDBFileRepository(
+          {} as unknown as Collection<FileInfo>,
+          {
+            db: () => ({
+              command: jest.fn(async () => Promise.resolve())
+            })
+          } as unknown as MongoClient
+        );
+
+        res = await repo.isLive();
+      });
+
+      it('returns true', () => {
+        expect(res).toEqual(true);
+      });
+    });
+
+    describe('when down', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const repo = new MongoDBFileRepository(
+          {} as unknown as Collection<FileInfo>,
+          {
+            db: () => ({
+              command: jest.fn(async () => Promise.reject(new Error()))
+            })
+          } as unknown as MongoClient
+        );
+
+        res = await repo.isLive();
+      });
+
+      it('returns false', () => {
+        expect(res).toEqual(false);
+      });
     });
   });
 });

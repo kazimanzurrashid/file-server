@@ -196,4 +196,54 @@ describe('RedisRateLimit', () => {
       expect(mockedDelete).toHaveBeenCalled();
     });
   });
+
+  describe('isLive', () => {
+    describe('when alive', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedPing = jest.fn(async () => Promise.resolve());
+
+        const rateLimit = new RedisRateLimit(
+          {
+            uploads: 0,
+            downloads: 0
+          },
+          {
+            ping: mockedPing
+          } as unknown as RedisClientType
+        );
+
+        res = await rateLimit.isLive();
+      });
+
+      it('returns true', () => {
+        expect(res).toEqual(true);
+      });
+    });
+
+    describe('when down', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedPing = jest.fn(async () => Promise.reject(new Error()));
+
+        const rateLimit = new RedisRateLimit(
+          {
+            uploads: 0,
+            downloads: 0
+          },
+          {
+            ping: mockedPing
+          } as unknown as RedisClientType
+        );
+
+        res = await rateLimit.isLive();
+      });
+
+      it('returns false', () => {
+        expect(res).toEqual(false);
+      });
+    });
+  });
 });

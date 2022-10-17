@@ -43,4 +43,8 @@ export default class LocalFileStorage implements FileStorage {
 
     return Promise.resolve(stream);
   }
+
+  async isLive(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
 }

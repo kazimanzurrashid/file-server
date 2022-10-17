@@ -4,7 +4,7 @@ import { Stream } from 'stream';
 
 import { Storage } from '@google-cloud/storage';
 
-import { Pipeable } from './file-storage';
+import type { Pipeable } from './file-storage';
 import GcpFileStorage from './gcp-file-storage';
 
 describe('GcpFileStorage', () => {
@@ -91,6 +91,60 @@ describe('GcpFileStorage', () => {
 
     it('returns underlying stream', () => {
       expect(res).toBeDefined();
+    });
+  });
+
+  describe('isLive', () => {
+    describe('when bucket exists', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedBucketExists = jest.fn(async () => Promise.resolve([true]));
+
+        const client = {
+          bucket: () => ({
+            exists: mockedBucketExists
+          })
+        };
+
+        const storage = new GcpFileStorage(
+          client as unknown as Storage,
+          Bucket
+        );
+
+        res = await storage.isLive();
+      });
+
+      it('returns true', () => {
+        expect(res).toEqual(true);
+      });
+    });
+
+    describe('when bucket does not exist', () => {
+      let res: boolean;
+
+      beforeAll(async () => {
+        const mockedBucketExists = jest.fn(async () =>
+          Promise.reject(new Error())
+        );
+
+        const client = {
+          bucket: () => ({
+            exists: mockedBucketExists
+          })
+        };
+
+        const storage = new GcpFileStorage(
+          client as unknown as Storage,
+          Bucket
+        );
+
+        res = await storage.isLive();
+      });
+
+      it('returns false', () => {
+        expect(res).toEqual(false);
+      });
     });
   });
 });

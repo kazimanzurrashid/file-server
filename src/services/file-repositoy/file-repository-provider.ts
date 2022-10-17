@@ -62,7 +62,11 @@ export default function fileRepositoryProvider(
               .info('mongodb client connected');
           }
 
-          await client.db().createCollection(config.db.mongodb.collection);
+          try {
+            await client.db().createCollection(config.db.mongodb.collection);
+          } catch (e) {
+            // do nothing
+          }
 
           await Promise.all([
             ensureIndex('ix_privateKey', 'privateKey', true, true),

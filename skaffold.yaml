@@ -1,0 +1,24 @@
+apiVersion: skaffold/v2beta29
+kind: Config
+metadata:
+  name: file-server
+build:
+  tagPolicy:
+    gitCommit:
+      variant: AbbrevCommitSha
+  artifacts:
+  - image: kazirashid/file-server
+    docker:
+      dockerfile: Dockerfile
+  local:
+    push: true
+deploy:
+  kustomize:
+    paths:
+    - k8s\base
+profiles:
+- name: development
+  deploy:
+    kustomize:
+      paths:
+      - k8s\overlays\development

@@ -1,11 +1,11 @@
 import { ReadStream } from 'fs';
 import { basename, join } from 'path';
 
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 
 import FileStorage, { Pipeable } from './file-storage';
 
-@injectable()
+@singleton()
 export default class LocalFileStorage implements FileStorage {
   constructor(
     @inject('localStorageLocation')

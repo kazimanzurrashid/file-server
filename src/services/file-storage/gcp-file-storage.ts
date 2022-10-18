@@ -1,11 +1,11 @@
 import { basename } from 'path';
 
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import { Bucket, Storage } from '@google-cloud/storage';
 
 import FileStorage, { Pipeable } from './file-storage';
 
-@injectable()
+@singleton()
 export default class GcpFileStorage implements FileStorage {
   private readonly bucket: Bucket;
 

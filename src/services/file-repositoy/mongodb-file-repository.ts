@@ -1,10 +1,10 @@
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import { Collection, MongoClient } from 'mongodb';
 
 import clock from '../../lib/clock';
 import FileRepository, { AddFileInfo, FileInfo } from './file-repository';
 
-@injectable()
+@singleton()
 export default class MongoDBFileRepository implements FileRepository {
   constructor(
     @inject('mongoFilesCollection')

@@ -1,4 +1,4 @@
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 import { RedisClientType } from '@redis/client';
 
 import RateLimit from './rate-limit';
@@ -6,7 +6,7 @@ import { generateTimestamp, prefix } from './prefix';
 
 const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
 
-@injectable()
+@singleton()
 export default class RedisRateLimit implements RateLimit {
   constructor(
     @inject('rateLimitMax')
@@ -36,8 +36,9 @@ export default class RedisRateLimit implements RateLimit {
 
   async reset(): Promise<void> {
     const pattern = `${generateTimestamp()}:*`;
+    const keys = await this.client.keys(pattern);
 
-    await this.client.del(pattern);
+    await this.client.del(keys);
   }
 
   async isLive(): Promise<boolean> {

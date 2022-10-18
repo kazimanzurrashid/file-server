@@ -1,6 +1,6 @@
 import { basename } from 'path';
 
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 
 import {
   BlobServiceClient,
@@ -10,7 +10,7 @@ import {
 
 import FileStorage, { Pipeable } from './file-storage';
 
-@injectable()
+@singleton()
 export default class AzFileStorage implements FileStorage {
   private readonly container: ContainerClient;
 

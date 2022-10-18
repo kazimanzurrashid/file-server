@@ -174,9 +174,11 @@ describe('RedisRateLimit', () => {
   });
 
   describe('reset', () => {
+    let mockedKeys: jest.Mock;
     let mockedDelete: jest.Mock;
 
     beforeAll(async () => {
+      mockedKeys = jest.fn(async () => Promise.resolve(['key1']));
       mockedDelete = jest.fn(async () => Promise.resolve());
 
       const rateLimit = new RedisRateLimit(
@@ -185,6 +187,7 @@ describe('RedisRateLimit', () => {
           downloads: 0
         },
         {
+          keys: mockedKeys,
           del: mockedDelete
         } as unknown as RedisClientType
       );
@@ -192,7 +195,8 @@ describe('RedisRateLimit', () => {
       await rateLimit.reset();
     });
 
-    it('delegates to redis del', () => {
+    it('delegates to redis keys and del', () => {
+      expect(mockedKeys).toHaveBeenCalled();
       expect(mockedDelete).toHaveBeenCalled();
     });
   });

@@ -1,7 +1,7 @@
 import { basename } from 'path';
 import { ReadStream } from 'fs';
 
-import { inject, injectable } from 'tsyringe';
+import { inject, singleton } from 'tsyringe';
 
 import {
   DeleteObjectCommand,
@@ -13,7 +13,7 @@ import {
 
 import FileStorage, { Pipeable } from './file-storage';
 
-@injectable()
+@singleton()
 export default class AwsFileStorage implements FileStorage {
   constructor(
     @inject('s3Client')

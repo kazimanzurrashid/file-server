@@ -1,0 +1,250 @@
+{
+	"info": {
+		"_postman_id": "48fcc8a3-7722-4f82-9feb-ce5400718cb3",
+		"name": "file-server-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2398260"
+	},
+	"item": [
+		{
+			"name": "create",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"\r",
+							"if (pm.response.code === 201) {\r",
+							"    var res = pm.response.json();\r",
+							"\r",
+							"    pm.collectionVariables.set('PUBLIC_KEY',  res.publicKey);\r",
+							"    pm.collectionVariables.set('PRIVATE_KEY',  res.privateKey);\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/downloads/me.jpeg"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/files",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"files"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/files/{{PUBLIC_KEY}}",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"files",
+						"{{PUBLIC_KEY}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"if (pm.response.code === 204) {\r",
+							"    pm.collectionVariables.unset('PRIVATE_KEY');\r",
+							"    pm.collectionVariables.unset('PUBLIC_KEY');\r",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/files/{{PRIVATE_KEY}}",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"files",
+						"{{PRIVATE_KEY}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "health-simple",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/health",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "health-detail",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{ENDPOINT}}/health?detail=yes",
+					"host": [
+						"{{ENDPOINT}}"
+					],
+					"path": [
+						"health"
+					],
+					"query": [
+						{
+							"key": "detail",
+							"value": "yes"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ENDPOINT",
+			"value": "http://localhost:3002",
+			"type": "string"
+		},
+		{
+			"key": "PUBLIC_KEY",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "PRIVATE_KEY",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

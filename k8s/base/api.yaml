@@ -26,7 +26,7 @@ spec:
   volumeName: files
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: api
   labels:
@@ -35,7 +35,6 @@ spec:
   selector:
     matchLabels:
       app: api
-  serviceName: api
   template:
     metadata:
       name: api
@@ -117,7 +116,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     name: api
-    kind: StatefulSet
+    kind: Deployment
   metrics:
     - type: Resource
       resource:

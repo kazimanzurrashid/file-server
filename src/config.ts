@@ -13,7 +13,7 @@ export function isDefault(value: string): boolean {
   return !value || /^<PUT_YOUR_\w+>$/.test(value);
 }
 
-export default {
+const config = {
   port: setDefault('3002', 'PORT', 'FILE_SERVER_PORT'),
 
   rateLimit: {
@@ -104,124 +104,139 @@ export default {
   },
 
   validate(): void {
-    if (this.rateLimit.max.downloads < 1) {
-      throw new Error(
-        'Rate limit daily max downloads must be a positive integer'
-      );
-    }
-
-    if (this.rateLimit.max.uploads < 1) {
-      throw new Error(
-        'Rate limit daily max uploads must be a positive integer'
-      );
-    }
-
-    const supportedRateLimitProviders = 'redis,in-memory'.split(',');
-
-    if (!supportedRateLimitProviders.includes(this.rateLimit.provider)) {
-      throw new Error(
-        `Unknown database provider! supported values are ${supportedRateLimitProviders.join(
-          ', '
-        )}.`
-      );
-    }
-
-    if (this.rateLimit.provider === 'redis') {
-      if (isDefault(this.rateLimit.redis.uri)) {
-        throw new Error('Redis connection string must be set.');
-      }
-    }
-
-    const mongoDB = ['mongo', 'mongodb'];
-
-    const supportedDBProviders = [...mongoDB, 'in-memory'];
-
-    if (!supportedDBProviders.includes(this.db.provider)) {
-      throw new Error(
-        `Unknown database provider! supported values are "${supportedDBProviders.join(
-          ', '
-        )}".`
-      );
-    }
-
-    if (mongoDB.includes(this.db.provider)) {
-      if (isDefault(this.db.mongodb.uri)) {
-        throw new Error('MongoDB connection string must be set.');
-      }
-
-      if (isDefault(this.db.mongodb.collection)) {
-        throw new Error('Mongodb collection must be set.');
-      }
-    }
-
-    if (isDefault(this.storage.tempLocation)) {
-      throw new Error('Storage temp location must be set.');
-    }
-
-    const gcp = 'gcp/google'.split('/');
-    const aws = 'aws/amazon'.split('/');
-    const az = 'az/azure/microsoft'.split('/');
-
-    const supportedStorageProviders = [...gcp, ...aws, ...az, 'local'];
-
-    if (!supportedStorageProviders.includes(this.storage.provider)) {
-      throw new Error(
-        `Unknown storage provider! supported values are ${supportedStorageProviders.join(
-          ', '
-        )}.`
-      );
-    }
-
-    if (gcp.includes(this.storage.provider)) {
-      if (isDefault(this.storage.gcp.keyFileLocation)) {
-        throw new Error('GCP key file location must be set.');
-      }
-
-      if (isDefault(this.storage.gcp.bucket)) {
-        throw new Error('GCP bucket must be set.');
-      }
-    } else if (aws.includes(this.storage.provider)) {
-      if (isDefault(this.storage.aws.accessKeyId)) {
-        throw new Error('AWS access key id must be set.');
-      }
-
-      if (isDefault(this.storage.aws.secretAccessKey)) {
-        throw new Error('AWS secret access key must be set.');
-      }
-
-      if (isDefault(this.storage.aws.region)) {
-        throw new Error('AWS region must be set.');
-      }
-
-      if (isDefault(this.storage.aws.bucket)) {
-        throw new Error('AWS bucket must be set.');
-      }
-    } else if (az.includes(this.storage.provider)) {
-      if (isDefault(this.storage.az.storageAccountName)) {
-        throw new Error('AZ storage account name must be set.');
-      }
-
-      if (isDefault(this.storage.az.storageAccountAccessKey)) {
-        throw new Error('AZ storage account access key must be set.');
-      }
-
-      if (isDefault(this.storage.az.storageContainer)) {
-        throw new Error('AZ storage container name must be set.');
-      }
-    } else {
-      if (isDefault(this.storage.local.location)) {
-        throw new Error('Local storage location must be set.');
-      }
-    }
-
-    if (this.garbageCollection.enabled) {
-      if (isDefault(this.garbageCollection.cronExpression)) {
-        throw new Error('Cannot unset garbage collection cron expression.');
-      }
-
-      if (isDefault(this.garbageCollection.inactiveDuration)) {
-        throw new Error('Cannot unset garbage collection inactive duration.');
-      }
-    }
+    validateCache(this);
+    validateDB(this);
+    validateStorage(this);
+    validateGC(this);
   }
 };
+
+function validateCache(cfg: typeof config): void {
+  if (cfg.rateLimit.max.downloads < 1) {
+    throw new Error(
+      'Rate limit daily max downloads must be a positive integer'
+    );
+  }
+
+  if (cfg.rateLimit.max.uploads < 1) {
+    throw new Error('Rate limit daily max uploads must be a positive integer');
+  }
+
+  const supportedRateLimitProviders = 'redis,in-memory'.split(',');
+
+  if (!supportedRateLimitProviders.includes(cfg.rateLimit.provider)) {
+    throw new Error(
+      `Unknown database provider! supported values are ${supportedRateLimitProviders.join(
+        ', '
+      )}.`
+    );
+  }
+
+  if (cfg.rateLimit.provider === 'redis') {
+    if (isDefault(cfg.rateLimit.redis.uri)) {
+      throw new Error('Redis connection string must be set.');
+    }
+  }
+}
+
+function validateDB(cfg: typeof config): void {
+  const mongoDB = ['mongo', 'mongodb'];
+
+  const supportedDBProviders = [...mongoDB, 'in-memory'];
+
+  if (!supportedDBProviders.includes(cfg.db.provider)) {
+    throw new Error(
+      `Unknown database provider! supported values are "${supportedDBProviders.join(
+        ', '
+      )}".`
+    );
+  }
+
+  if (mongoDB.includes(cfg.db.provider)) {
+    if (isDefault(cfg.db.mongodb.uri)) {
+      throw new Error('MongoDB connection string must be set.');
+    }
+
+    if (isDefault(cfg.db.mongodb.collection)) {
+      throw new Error('Mongodb collection must be set.');
+    }
+  }
+}
+
+function validateStorage(cfg: typeof config): void {
+  if (isDefault(cfg.storage.tempLocation)) {
+    throw new Error('Storage temp location must be set.');
+  }
+
+  const gcp = 'gcp/google'.split('/');
+  const aws = 'aws/amazon'.split('/');
+  const az = 'az/azure/microsoft'.split('/');
+
+  const supportedStorageProviders = [...gcp, ...aws, ...az, 'local'];
+
+  if (!supportedStorageProviders.includes(cfg.storage.provider)) {
+    throw new Error(
+      `Unknown storage provider! supported values are ${supportedStorageProviders.join(
+        ', '
+      )}.`
+    );
+  }
+
+  if (gcp.includes(cfg.storage.provider)) {
+    if (isDefault(cfg.storage.gcp.keyFileLocation)) {
+      throw new Error('GCP key file location must be set.');
+    }
+
+    if (isDefault(cfg.storage.gcp.bucket)) {
+      throw new Error('GCP bucket must be set.');
+    }
+  } else if (aws.includes(cfg.storage.provider)) {
+    if (isDefault(cfg.storage.aws.accessKeyId)) {
+      throw new Error('AWS access key id must be set.');
+    }
+
+    if (isDefault(cfg.storage.aws.secretAccessKey)) {
+      throw new Error('AWS secret access key must be set.');
+    }
+
+    if (isDefault(cfg.storage.aws.region)) {
+      throw new Error('AWS region must be set.');
+    }
+
+    if (isDefault(cfg.storage.aws.bucket)) {
+      throw new Error('AWS bucket must be set.');
+    }
+  } else if (az.includes(cfg.storage.provider)) {
+    if (isDefault(cfg.storage.az.storageAccountName)) {
+      throw new Error('AZ storage account name must be set.');
+    }
+
+    if (isDefault(cfg.storage.az.storageAccountAccessKey)) {
+      throw new Error('AZ storage account access key must be set.');
+    }
+
+    if (isDefault(cfg.storage.az.storageContainer)) {
+      throw new Error('AZ storage container name must be set.');
+    }
+  } else {
+    if (isDefault(cfg.storage.local.location)) {
+      throw new Error('Local storage location must be set.');
+    }
+  }
+}
+
+function validateGC(cfg: typeof config): void {
+  if (!cfg.garbageCollection.enabled) {
+    return;
+  }
+
+  if (isDefault(cfg.garbageCollection.cronExpression)) {
+    throw new Error('Cannot unset garbage collection cron expression.');
+  }
+
+  if (isDefault(cfg.garbageCollection.inactiveDuration)) {
+    throw new Error('Cannot unset garbage collection inactive duration.');
+  }
+}
+
+export default config;

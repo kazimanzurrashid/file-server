@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { container } from 'tsyringe';
 
-import type { Logger } from 'pino';
 import type { RedisClientOptions, RedisClientType } from '@redis/client';
 
 import config from '../../config';
@@ -33,80 +32,27 @@ describe('rateLimitProvider', () => {
   });
 
   describe('redis', () => {
-    describe('success', () => {
-      let mockedLoggerInfo: jest.Mock;
+    let rateLimit: RateLimit;
 
-      let rateLimit: RateLimit;
+    beforeAll(() => {
+      config.rateLimit.provider = 'redis';
 
-      beforeAll(() => {
-        config.rateLimit.provider = 'redis';
+      const mockedConnect = jest.fn(async () => Promise.resolve());
 
-        mockedLoggerInfo = jest.fn();
+      container.registerInstance<(_: RedisClientOptions) => RedisClientType>(
+        'redisFactory',
+        () => {
+          return {
+            connect: mockedConnect
+          } as unknown as RedisClientType;
+        }
+      );
 
-        container.registerInstance<Logger>('Logger', {
-          info: mockedLoggerInfo
-        } as unknown as Logger);
-
-        const mockedConnect = jest.fn(async () => Promise.resolve());
-
-        container.registerInstance<(_: RedisClientOptions) => RedisClientType>(
-          'redisFactory',
-          () => {
-            return {
-              connect: mockedConnect
-            } as unknown as RedisClientType;
-          }
-        );
-
-        rateLimit = rateLimitProvider(container);
-      });
-
-      it('returns correct limit', () => {
-        expect(rateLimit).toBeInstanceOf(RedisRateLimit);
-      });
-
-      it('logs when successfully connected', () => {
-        expect(mockedLoggerInfo).toHaveBeenCalled();
-      });
+      rateLimit = rateLimitProvider(container);
     });
 
-    describe('failure', () => {
-      let mockedLoggerError: jest.Mock;
-
-      let rateLimit: RateLimit;
-
-      beforeAll(() => {
-        config.rateLimit.provider = 'redis';
-
-        mockedLoggerError = jest.fn();
-
-        container.registerInstance<Logger>('Logger', {
-          error: mockedLoggerError
-        } as unknown as Logger);
-
-        const mockedConnect = jest.fn(async () =>
-          Promise.reject(new Error('Failed to connect'))
-        );
-
-        container.registerInstance<(_: RedisClientOptions) => RedisClientType>(
-          'redisFactory',
-          () => {
-            return {
-              connect: mockedConnect
-            } as unknown as RedisClientType;
-          }
-        );
-
-        rateLimit = rateLimitProvider(container);
-      });
-
-      it('returns correct limit', () => {
-        expect(rateLimit).toBeInstanceOf(RedisRateLimit);
-      });
-
-      it('logs when failed to connected', () => {
-        expect(mockedLoggerError).toHaveBeenCalled();
-      });
+    it('returns correct limit', () => {
+      expect(rateLimit).toBeInstanceOf(RedisRateLimit);
     });
   });
 

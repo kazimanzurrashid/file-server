@@ -1,6 +1,5 @@
 import type { DependencyContainer } from 'tsyringe';
 import type { RedisClientOptions, RedisClientType } from '@redis/client';
-import type { Logger } from 'pino';
 
 import config from '../../config';
 import type RateLimit from './rate-limit';
@@ -31,21 +30,7 @@ export default function rateLimitProvider(
 
       container.registerInstance('redisClient', client);
 
-      // eslint-disable-next-line github/no-then
-      client.connect().then(
-        () => {
-          if (container.isRegistered<Logger>('Logger')) {
-            container.resolve<Logger>('Logger').info('redis client connected');
-          }
-        },
-        (reason) => {
-          if (container.isRegistered<Logger>('Logger')) {
-            container
-              .resolve<Logger>('Logger')
-              .error(reason, 'redis connection error');
-          }
-        }
-      );
+      client.connect();
 
       return container.resolve(RedisRateLimit);
     }

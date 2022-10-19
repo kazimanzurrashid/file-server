@@ -1,6 +1,5 @@
 import type { DependencyContainer } from 'tsyringe';
 import type { Collection, MongoClient } from 'mongodb';
-import type { Logger } from 'pino';
 
 import config from '../../config';
 
@@ -54,34 +53,19 @@ export default function fileRepositoryProvider(
       };
 
       // eslint-disable-next-line github/no-then
-      client.connect().then(
-        async () => {
-          if (container.isRegistered<Logger>('Logger')) {
-            container
-              .resolve<Logger>('Logger')
-              .info('mongodb client connected');
-          }
-
-          try {
-            await client.db().createCollection(config.db.mongodb.collection);
-          } catch (e) {
-            // do nothing
-          }
-
-          await Promise.all([
-            ensureIndex('ix_privateKey', 'privateKey', true, true),
-            ensureIndex('ix_publicKey', 'publicKey', true, true),
-            ensureIndex('ix_lastActivity', 'lastActivity', false, false)
-          ]);
-        },
-        (reason) => {
-          if (container.isRegistered<Logger>('Logger')) {
-            container
-              .resolve<Logger>('Logger')
-              .error(reason, 'mongodb connection error');
-          }
+      client.connect().then(async () => {
+        try {
+          await client.db().createCollection(config.db.mongodb.collection);
+        } catch (e) {
+          // do nothing
         }
-      );
+
+        await Promise.all([
+          ensureIndex('ix_privateKey', 'privateKey', true, true),
+          ensureIndex('ix_publicKey', 'publicKey', true, true),
+          ensureIndex('ix_lastActivity', 'lastActivity', false, false)
+        ]);
+      });
 
       return container.resolve(MongoDBFileRepository);
     }

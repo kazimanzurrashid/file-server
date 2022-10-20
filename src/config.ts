@@ -111,7 +111,7 @@ const config = {
   }
 };
 
-function validateCache(cfg: typeof config): void {
+function validateCache(cfg: Pick<typeof config, 'rateLimit'>): void {
   if (cfg.rateLimit.max.downloads < 1) {
     throw new Error(
       'Rate limit daily max downloads must be a positive integer'
@@ -139,7 +139,7 @@ function validateCache(cfg: typeof config): void {
   }
 }
 
-function validateDB(cfg: typeof config): void {
+function validateDB(cfg: Pick<typeof config, 'db'>): void {
   const mongoDB = ['mongo', 'mongodb'];
 
   const supportedDBProviders = [...mongoDB, 'in-memory'];
@@ -163,7 +163,7 @@ function validateDB(cfg: typeof config): void {
   }
 }
 
-function validateStorage(cfg: typeof config): void {
+function validateStorage(cfg: Pick<typeof config, 'storage'>): void {
   if (isDefault(cfg.storage.tempLocation)) {
     throw new Error('Storage temp location must be set.');
   }
@@ -190,7 +190,9 @@ function validateStorage(cfg: typeof config): void {
     if (isDefault(cfg.storage.gcp.bucket)) {
       throw new Error('GCP bucket must be set.');
     }
-  } else if (aws.includes(cfg.storage.provider)) {
+  }
+
+  if (aws.includes(cfg.storage.provider)) {
     if (isDefault(cfg.storage.aws.accessKeyId)) {
       throw new Error('AWS access key id must be set.');
     }
@@ -206,7 +208,9 @@ function validateStorage(cfg: typeof config): void {
     if (isDefault(cfg.storage.aws.bucket)) {
       throw new Error('AWS bucket must be set.');
     }
-  } else if (az.includes(cfg.storage.provider)) {
+  }
+
+  if (az.includes(cfg.storage.provider)) {
     if (isDefault(cfg.storage.az.storageAccountName)) {
       throw new Error('AZ storage account name must be set.');
     }
@@ -218,14 +222,14 @@ function validateStorage(cfg: typeof config): void {
     if (isDefault(cfg.storage.az.storageContainer)) {
       throw new Error('AZ storage container name must be set.');
     }
-  } else {
-    if (isDefault(cfg.storage.local.location)) {
-      throw new Error('Local storage location must be set.');
-    }
+  }
+
+  if (isDefault(cfg.storage.local.location)) {
+    throw new Error('Local storage location must be set.');
   }
 }
 
-function validateGC(cfg: typeof config): void {
+function validateGC(cfg: Pick<typeof config, 'garbageCollection'>): void {
   if (!cfg.garbageCollection.enabled) {
     return;
   }

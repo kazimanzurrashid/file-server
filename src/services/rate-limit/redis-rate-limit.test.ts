@@ -202,7 +202,7 @@ describe('RedisRateLimit', () => {
   });
 
   describe('isLive', () => {
-    describe('when alive', () => {
+    describe('when up', () => {
       let res: boolean;
 
       beforeAll(async () => {

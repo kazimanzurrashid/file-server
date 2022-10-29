@@ -1,7 +1,7 @@
 import key from './key';
 
 describe('key', () => {
-  describe('#generate', () => {
+  describe('generate', () => {
     let res: string;
 
     beforeAll(() => {

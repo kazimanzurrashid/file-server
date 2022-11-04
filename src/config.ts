@@ -183,49 +183,64 @@ function validateStorage(cfg: Pick<typeof config, 'storage'>): void {
   }
 
   if (gcp.includes(cfg.storage.provider)) {
-    if (isDefault(cfg.storage.gcp.keyFileLocation)) {
-      throw new Error('GCP key file location must be set.');
-    }
-
-    if (isDefault(cfg.storage.gcp.bucket)) {
-      throw new Error('GCP bucket must be set.');
-    }
+    validateGCP(cfg.storage.gcp);
+    return;
   }
 
   if (aws.includes(cfg.storage.provider)) {
-    if (isDefault(cfg.storage.aws.accessKeyId)) {
-      throw new Error('AWS access key id must be set.');
-    }
-
-    if (isDefault(cfg.storage.aws.secretAccessKey)) {
-      throw new Error('AWS secret access key must be set.');
-    }
-
-    if (isDefault(cfg.storage.aws.region)) {
-      throw new Error('AWS region must be set.');
-    }
-
-    if (isDefault(cfg.storage.aws.bucket)) {
-      throw new Error('AWS bucket must be set.');
-    }
+    validateAWS(cfg.storage.aws);
+    return;
   }
 
   if (az.includes(cfg.storage.provider)) {
-    if (isDefault(cfg.storage.az.storageAccountName)) {
-      throw new Error('AZ storage account name must be set.');
-    }
-
-    if (isDefault(cfg.storage.az.storageAccountAccessKey)) {
-      throw new Error('AZ storage account access key must be set.');
-    }
-
-    if (isDefault(cfg.storage.az.storageContainer)) {
-      throw new Error('AZ storage container name must be set.');
-    }
+    validateAZ(cfg.storage.az);
+    return;
   }
 
   if (isDefault(cfg.storage.local.location)) {
     throw new Error('Local storage location must be set.');
+  }
+}
+
+function validateGCP(gcp: typeof config.storage.gcp): void {
+  if (isDefault(gcp.keyFileLocation)) {
+    throw new Error('GCP key file location must be set.');
+  }
+
+  if (isDefault(gcp.bucket)) {
+    throw new Error('GCP bucket must be set.');
+  }
+}
+
+function validateAWS(aws: typeof config.storage.aws): void {
+  if (isDefault(aws.accessKeyId)) {
+    throw new Error('AWS access key id must be set.');
+  }
+
+  if (isDefault(aws.secretAccessKey)) {
+    throw new Error('AWS secret access key must be set.');
+  }
+
+  if (isDefault(aws.region)) {
+    throw new Error('AWS region must be set.');
+  }
+
+  if (isDefault(aws.bucket)) {
+    throw new Error('AWS bucket must be set.');
+  }
+}
+
+function validateAZ(az: typeof config.storage.az): void {
+  if (isDefault(az.storageAccountName)) {
+    throw new Error('AZ storage account name must be set.');
+  }
+
+  if (isDefault(az.storageAccountAccessKey)) {
+    throw new Error('AZ storage account access key must be set.');
+  }
+
+  if (isDefault(az.storageContainer)) {
+    throw new Error('AZ storage container name must be set.');
   }
 }
 

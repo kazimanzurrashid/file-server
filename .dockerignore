@@ -16,6 +16,7 @@ Dockerfile
 Dockerfile.dev
 docker-compose.yml
 .env
+.dccache
 .husky
 gen
 k8s

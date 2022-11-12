@@ -1,22 +1,23 @@
 {
-	"name": "file-server",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "api",
-	"workspaceFolder": "/workspace",
-	"forwardPorts": [3002, 8081],
+  "name": "file-server",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "api",
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [3002, 8081],
   "features": {
     "ghcr.io/devcontainers/features/kubectl-helm-minikube:1": {
       "version": "latest"
     }
   },
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"dbaeumer.vscode-eslint",
-				"esbenp.prettier-vscode",
-				"EditorConfig.EditorConfig"
-			]
-		}
-	},
-	"postStartCommand": "npm install"
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  },
+  "initializeCommand": "cp .env.dev .env",
+  "postStartCommand": "npm install"
 }

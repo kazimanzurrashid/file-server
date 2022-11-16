@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import clock from '../../lib/clock';
+import key from '../../lib/key';
 import { FileInfo } from './file-repository';
 import InMemoryFileRepository from './in-memory-file-repository';
 
@@ -11,8 +12,8 @@ class InMemoryFileRepositoryTestDouble extends InMemoryFileRepository {
 }
 
 describe('InMemoryFileRepository', () => {
-  const PublicKey = 'public-key';
-  const PrivateKey = 'private-key';
+  const PublicKey = key.generate();
+  const PrivateKey = key.generate();
   const MimeType = 'image/png';
   const Path = 'a1f1457845cf420c883d46abc5a5c844.jpg';
   const OriginalName = 'my-photo.jpg';

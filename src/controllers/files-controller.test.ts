@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import type { Request, Response } from 'express';
 
+import key from '../lib/key';
 import FilesController from './files-controller';
 import FileRepository from '../services/file-repositoy/file-repository';
 import RateLimit from '../services/rate-limit/rate-limit';
@@ -198,7 +199,7 @@ describe('FilesController', () => {
 
         const req = {
           params: {
-            privateKey: 'private-key'
+            privateKey: key.generate()
           }
         };
 
@@ -250,7 +251,7 @@ describe('FilesController', () => {
 
         const req = {
           params: {
-            privateKey: 'private-key'
+            privateKey: key.generate()
           }
         };
 

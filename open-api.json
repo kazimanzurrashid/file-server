@@ -7,9 +7,7 @@
   "paths": {
     "/files": {
       "post": {
-        "tags": [
-          "File"
-        ],
+        "tags": ["File"],
         "summary": "Uploads a file",
         "requestBody": {
           "content": {
@@ -74,9 +72,7 @@
     },
     "/files/{privateKey}": {
       "delete": {
-        "tags": [
-          "File"
-        ],
+        "tags": ["File"],
         "summary": "Deletes the file",
         "parameters": [
           {
@@ -107,9 +103,7 @@
     },
     "/files/{publicKey}": {
       "get": {
-        "tags": [
-          "File"
-        ],
+        "tags": ["File"],
         "summary": "Returns the file upon success",
         "parameters": [
           {

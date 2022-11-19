@@ -1,7 +1,3 @@
 {
-  "*.ts": [
-    "prettier --list-different",
-    "eslint",
-    "jest --findRelatedTests"
-  ]
+  "*.ts": ["prettier --list-different", "eslint", "jest --findRelatedTests"]
 }

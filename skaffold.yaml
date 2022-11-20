@@ -4,19 +4,19 @@ metadata:
   name: file-server
 build:
   artifacts:
-  - image: kazirashid/file-server
-    docker:
-      dockerfile: Dockerfile
+    - image: kazirashid/file-server
+      docker:
+        dockerfile: Dockerfile
   tagPolicy:
     gitCommit:
       variant: AbbrevCommitSha
 manifests:
   kustomize:
     paths:
-    - k8s\base
+      - k8s\base
 profiles:
-- name: development
-  manifests:
-    kustomize:
-      paths:
-      - k8s\overlays\development
+  - name: development
+    manifests:
+      kustomize:
+        paths:
+          - k8s\overlays\development

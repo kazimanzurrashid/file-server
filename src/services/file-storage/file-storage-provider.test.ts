@@ -66,15 +66,22 @@ describe('fileStorageProvider', () => {
   });
 
   describe('az', () => {
+    let originalStorageAccountName: string;
     let storage: FileStorage;
 
     beforeAll(() => {
       config.storage.provider = 'az';
+      originalStorageAccountName = config.storage.az.storageAccountName;
+      config.storage.az.storageAccountName = 'test';
       storage = fileStorageProvider(container);
     });
 
     it('returns correct storage', () => {
       expect(storage).toBeInstanceOf(AzFileStorage);
+    });
+
+    afterAll(() => {
+      config.storage.az.storageAccountName = originalStorageAccountName;
     });
   });
 

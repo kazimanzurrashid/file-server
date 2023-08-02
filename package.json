@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.367.0",
-    "@azure/storage-blob": "^12.14.0",
+    "@azure/storage-blob": "^12.15.0",
     "@google-cloud/storage": "^6.11.0",
     "@redis/client": "^1.5.8",
     "express": "^4.18.2",
@@ -58,7 +58,7 @@
     "cross-env": "^7.0.3",
     "eslint": "^8.44.0",
     "eslint-config-prettier": "^8.9.0",
-    "eslint-plugin-github": "^4.8.0",
+    "eslint-plugin-github": "^4.9.2",
     "eslint-plugin-jest": "^27.2.3",
     "eslint-plugin-prettier": "^4.2.1",
     "husky": "^8.0.3",

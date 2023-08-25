@@ -65,7 +65,7 @@ describe('LocalFileStorage', () => {
         RootLocation,
         undefined,
         undefined,
-        () => ({} as unknown as ReadStream)
+        () => ({}) as unknown as ReadStream
       );
 
       res = await storage.load(Filename);

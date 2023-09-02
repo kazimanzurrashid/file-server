@@ -18,13 +18,11 @@ export default class MongoDBFileRepository implements FileRepository {
   }
 
   async delete(privateKey: string): Promise<FileInfo | undefined> {
-    const res = await this.collection.findOneAndDelete({ privateKey });
-
-    return res.value;
+    return await this.collection.findOneAndDelete({ privateKey });
   }
 
   async get(publicKey: string): Promise<FileInfo | undefined> {
-    const res = await this.collection.findOneAndUpdate(
+    return await this.collection.findOneAndUpdate(
       { publicKey },
       {
         $set: {
@@ -32,8 +30,6 @@ export default class MongoDBFileRepository implements FileRepository {
         }
       }
     );
-
-    return res.value;
   }
 
   async listInactiveSince(timestamp: Date, max = 25): Promise<FileInfo[]> {

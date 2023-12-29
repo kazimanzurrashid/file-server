@@ -34,7 +34,7 @@
     "node-cron": "^3.0.3",
     "parse-duration": "^1.1.0",
     "pino": "^8.17.1",
-    "reflect-metadata": "^0.1.13",
+    "reflect-metadata": "^0.1.14",
     "swagger-ui-express": "^5.0.0",
     "tsyringe": "^4.8.0",
     "uuid": "^9.0.1"

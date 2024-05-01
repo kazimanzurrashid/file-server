@@ -25,7 +25,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.552.0",
     "@azure/storage-blob": "^12.17.0",
-    "@google-cloud/storage": "^7.9.0",
+    "@google-cloud/storage": "^7.10.2",
     "@redis/client": "^1.5.14",
     "express": "^4.19.2",
     "express-pino-logger": "^7.0.0",

@@ -35,7 +35,7 @@
     "parse-duration": "^1.1.0",
     "pino": "^9.0.0",
     "reflect-metadata": "^0.2.2",
-    "swagger-ui-express": "^5.0.0",
+    "swagger-ui-express": "^5.0.1",
     "tsyringe": "^4.8.0",
     "uuid": "^9.0.1"
   },

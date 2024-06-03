@@ -21,7 +21,7 @@ const config = {
 
     max: {
       uploads: Number(setDefault('5', 'MAX_DAILY_UPLOADS')),
-      downloads: Number(setDefault('25', 'MAX_DAILY_DOWNLOADS'))
+      downloads: Number(setDefault('5', 'MAX_DAILY_DOWNLOADS'))
     },
 
     redis: {

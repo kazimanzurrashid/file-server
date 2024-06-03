@@ -14,8 +14,8 @@ describe('config', () => {
       expect(config.rateLimit.max.uploads).toEqual(5);
     });
 
-    it('rate limit daily max downloads is 25', () => {
-      expect(config.rateLimit.max.downloads).toEqual(25);
+    it('rate limit daily max downloads is 5', () => {
+      expect(config.rateLimit.max.downloads).toEqual(5);
     });
 
     it('redis uri is set to put instruction', () => {
